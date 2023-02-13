@@ -1,6 +1,9 @@
 # django import
 from django.core.management.base import BaseCommand
 
+# model import
+from cse.models import CseNotice
+
 # command utils import
 from cse.management.utils import rss_list
 
@@ -22,5 +25,18 @@ class Command(BaseCommand):
             print(response.status_code)
             raise Exception("통신에러")
         
-        data:dict = xmltodict.parse(response.text)
-        print(data['rss']['channel']['item'])
+        items:List(dict) = xmltodict.parse(response.text)['rss']['channel']['item']
+        items.reverse()
+        for item in items:
+            link = item.get('link')
+            input_data ={
+                'title': item.get('title'),
+                'pub_date' : item.get('pubDate'),
+                'author' : item.get('author')
+            }
+            cse_notice, created = CseNotice.objects.get_or_create(link=link,
+                                                                  defaults=input_data)
+            
+            if(created):
+                '이메일 보내기 코드'
+        
