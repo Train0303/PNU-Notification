@@ -1,5 +1,7 @@
 # django import
 from django.core.management.base import BaseCommand
+from django.core.mail import send_mail
+from django.conf import settings
 
 # model import
 from cse.models import CseNotice
@@ -18,7 +20,7 @@ class Command(BaseCommand):
 
     def handle(self, *args: Any, **options: Any) -> NoReturn:
         response: Response = get(url='https://cse.pusan.ac.kr/bbs/cse/2605/rssList.do',
-                                 params={"row": 20})
+                                 params={"row": 5})
 
         if not response.ok:
             print(response.status_code)
@@ -37,4 +39,10 @@ class Command(BaseCommand):
                                                                   defaults=input_data)
 
             if created:
-                '이메일 보내기 코드'
+                html_response: Response = get(url=cse_notice.link)
+                send_mail(subject=cse_notice.title,
+                          message="새로운 공지사항이 등록되었습니다.",
+                          from_email=settings.EMAIL_HOST,
+                          recipient_list=["rjsdnxogh55@gmail.com"],
+                          html_message=html_response.text,
+                          fail_silently=False)
