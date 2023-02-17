@@ -51,6 +51,7 @@ INSTALLED_APPS = [
 
     # custom Apps
     'cse',
+    'accounts',
 ]
 
 MIDDLEWARE = [
