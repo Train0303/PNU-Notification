@@ -1,20 +1,30 @@
-from django.contrib.auth import authenticate, login
-from django.shortcuts import render, redirect
-# from accounts.forms import UserForm
-from django.shortcuts import render, redirect
-from .forms import UserForm
+from django.contrib.auth import login
+from django.contrib.auth.views import LoginView, FormView
+from django.urls import reverse_lazy
+
+from .forms import EmailAuthenticationForm, CustomUserCreationForm
 
 
-def signup(request):
-    if request.method == "POST":
-        form = UserForm(request.POST)
-        if form.is_valid():
-            form.save()
-            useremail = form.cleaned_data.get('email')
-            raw_password = form.cleaned_data.get('password1')
-            user = authenticate(username=useremail, password=raw_password)  # 사용자 인증
-            login(request, user)  # 로그인
-            return redirect('index')
-    else:
-        form = UserForm()
-    return render(request, 'accounts/signup.html', {'form': form})
+class SignUpView(FormView):
+    template_name = 'registration/signup.html'
+    form_class = CustomUserCreationForm
+    success_url = reverse_lazy('registration:index') # 회원가입에 성공하면, 'index'로 이동
+
+    def form_valid(self, form):
+        user = form.save(commit=False)
+        user.email = form.cleaned_data.get('email')
+        user.save()
+        login(self.request, user)
+        return super().form_valid(form)
+
+
+class EmailLoginView(LoginView):
+    template_name = 'registration/login.html'
+    authentication_form = EmailAuthenticationForm
+    redirect_authenticated_user = True # 이미 로그인 된 사용자라면, `LOGIN_REDIRECT_URL`로 이동, `settings.py`에 '/'로 정의.
+
+
+### index test ###
+from django.shortcuts import render
+def index(request):
+    return render(request, 'base.html')
