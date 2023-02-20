@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     # custom Apps
     'cse',
     'registration',
+    'notice',
 ]
 
 MIDDLEWARE = [
@@ -124,7 +125,7 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ko-kr'
 
 TIME_ZONE = 'Asia/Seoul'
 
