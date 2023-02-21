@@ -14,7 +14,8 @@ class CreateNoticeForm(forms.Form):
     rss_link = forms.URLField(label='RSS 링크',
                               error_messages={'invalid': '유효한 RSS 링크를 입력해주세요.'})
 
-    def clean(self) -> str:
+    def clean(self) -> dict:
+        super().clean()
         rss_link: str = self.cleaned_data.get('rss_link')
         if rss_link:
             rss_link = rss_link.split('?')[0]

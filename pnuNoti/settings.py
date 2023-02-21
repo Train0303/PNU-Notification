@@ -50,9 +50,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # custom Apps
-    'cse',
     'registration',
     'notice',
+    'subscribe'
 ]
 
 MIDDLEWARE = [
