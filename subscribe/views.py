@@ -25,7 +25,8 @@ class CreateSubscribeView(LoginRequiredMixin, FormView):
         save_data = {
             'user': self.request.user,
             'notice': notice,
-            'notice_link': form.cleaned_data.get("notice_link")
+            'notice_link': form.cleaned_data.get('notice_link'),
+            'title': form.cleaned_data.get('title')
         }
 
         form.save(save_data)

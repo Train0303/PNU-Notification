@@ -5,6 +5,10 @@
         {% csrf_token %}
         {% include "form_errors.html" %}
         <div class="mb-3">
+            <label for="등록">등록명 (필수)</label>
+            <input type="text" class="form-control" name="title" id="title"
+                   value="{{ form.rss_link.value|default_if_none:'' }}">
+            <br>
             <label for="RSS">RSS링크 (필수)</label>
             <input type="text" class="form-control" name="rss_link" id="rss_link"
                    value="{{ form.rss_link.value|default_if_none:'' }}">

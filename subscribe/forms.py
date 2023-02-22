@@ -11,6 +11,8 @@ import xmltodict
 
 
 class CreateSubscribeForm(forms.Form):
+    title = forms.CharField(label="등록 제목",
+                            error_messages={"invalid": '내용을 입력해주세요.'})
     rss_link = forms.URLField(label="RSS 링크",
                               error_messages={'invalid': '유효한 RSS 링크를 입력해주세요.'})
     notice_link = forms.URLField(label="공지사항 링크",

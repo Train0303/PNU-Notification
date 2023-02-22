@@ -8,8 +8,9 @@ from notice.models import Notice
 
 # Create your models here.
 class Subscribe(models.Model):
+    title = models.CharField(verbose_name="구독명", max_length=128, null=False)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=False)
-    notice = models.ForeignKey(Notice, on_delete=models.CASCADE, null=False)
+    notice = models.ForeignKey(Notice, on_delete=models.CASCADE, null=False, related_name="notice_subscribe")
     notice_link = models.URLField(verbose_name="학과 공지사항 링크", null=True)
     is_active = models.BooleanField(default=True)
 

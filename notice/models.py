@@ -18,3 +18,6 @@ class Notice(models.Model):
         if ten_minutes_later < pub_date:
             return True
         return False
+
+    def __str__(self):
+        return f"{self.rss_link}"
