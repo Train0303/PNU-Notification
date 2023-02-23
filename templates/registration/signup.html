@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+{% load static %}
+
 {% block content %}
 <div class="container my-3">
     <form method="post" action="{% url 'registration:signup' %}">
@@ -9,6 +11,9 @@
             <input type="text" class="form-control" name="email" id="email"
                    value="{{ form.email.value|default_if_none:'' }}">
         </div>
+
+        <span id="email-duplication-check"></span>
+
         <div class="mb-3">
             <label for="password1">비밀번호</label>
             <input type="password" class="form-control" name="password1" id="password1"
@@ -22,4 +27,8 @@
         <button type="submit" class="btn btn-primary">생성하기</button>
     </form>
 </div>
+{% endblock %}
+
+{% block javascript %}
+<script src="{% static 'registration/email-check.js' %}"></script>
 {% endblock %}
