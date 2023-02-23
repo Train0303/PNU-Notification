@@ -44,12 +44,46 @@ class CreateSubscribeForm(forms.Form):
     def clean_notice_link(self):
         notice_link: str = self.cleaned_data.get('notice_link')
         rss_link: str = self.cleaned_data.get('rss_link')
+
         if notice_link and rss_link:
+            notice_response: Response = get(notice_link)
+            if not notice_response.ok:
+                raise forms.ValidationError('유효한 링크를 입력해주세요.')
+
             rss_link = rss_link.replace('https://', '').split('/')[0]
             notice_link = notice_link.replace('https://', '').split('/')[0]
             if rss_link != notice_link:
                 raise forms.ValidationError('RSS와 같은 학과의 링크를 입력해주세요.')
+
         return self.cleaned_data.get('notice_link')
 
     def save(self, save_data):
         Subscribe.objects.create(**save_data)
+
+
+class UpdateSubscribeForm(forms.Form):
+    title = forms.CharField(label="등록 제목",
+                            error_messages={"invalid": '내용을 입력해주세요.'})
+    rss_link = forms.URLField(label="RSS 링크",
+                              error_messages={'invalid': '유효한 RSS 링크를 입력해주세요.'},
+                              required=False)
+
+    notice_link = forms.URLField(label="공지사항 링크",
+                                 error_messages={'invalid': '유효한 공지사항 링크를 입력해주세요.'},
+                                 required=False)
+
+    def clean_notice_link(self):
+        notice_link: str = self.cleaned_data.get('notice_link')
+        rss_link: str = self.cleaned_data.get('rss_link')
+
+        if notice_link and rss_link:
+            notice_response: Response = get(notice_link)
+            if not notice_response.ok:
+                raise forms.ValidationError('유효한 링크를 입력해주세요.')
+
+            rss_link = rss_link.replace('https://', '').split('/')[0]
+            notice_link = notice_link.replace('https://', '').split('/')[0]
+            if rss_link != notice_link:
+                raise forms.ValidationError('RSS와 같은 학과의 링크를 입력해주세요.')
+
+        return self.cleaned_data.get('notice_link')

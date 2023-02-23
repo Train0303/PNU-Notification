@@ -4,10 +4,12 @@
     <form enctype = "multipart/form-data" method="post" action="{% url 'subscribe:create-subscribe' %}">
         {% csrf_token %}
         {% include "form_errors.html" %}
+        {% include "message_errors.html" %}
+
         <div class="mb-3">
             <label for="등록">등록명 (필수)</label>
             <input type="text" class="form-control" name="title" id="title"
-                   value="{{ form.rss_link.value|default_if_none:'' }}">
+                   value="{{ form.title.value|default_if_none:'' }}">
             <br>
             <label for="RSS">RSS링크 (필수)</label>
             <input type="text" class="form-control" name="rss_link" id="rss_link"

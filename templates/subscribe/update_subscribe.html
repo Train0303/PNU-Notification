@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container my-3">
+    <form enctype = "multipart/form-data" method="post" action="{% url 'subscribe:update-subscribe' subscribe.id %}">
+        {% csrf_token %}
+        {% include 'message_errors.html' %}
+
+        <div class="mb-3">
+            <label for="등록">등록명 (필수)</label>
+            <input type="text" class="form-control" name="title" id="title"
+                   value="{{ subscribe.title|default_if_none:"" }}">
+            <br>
+            <input type="hidden" class="form-control" name="rss_link" id="rss_link"
+                   value="{{ subscribe.notice.rss_link|default_if_none:'' }}">
+
+            <label for="Notice">공지사항 링크</label>
+            <input type="text" class="form-control" name="notice_link" id="notice_link"
+                   value="{{ subscribe.notice_link|default_if_none:"" }}">
+        </div>
+        <button type="submit" class="btn btn-primary">수정하기</button>
+        <a href="{% url 'registration:index' %}">
+            <button type="button" class="btn btn-danger">뒤로가기</button>
+        </a>
+    </form>
+
+</div>
+{% endblock %}
