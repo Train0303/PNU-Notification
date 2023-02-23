@@ -25,6 +25,11 @@
                     <a class="nav-link" href="{% url 'registration:signup' %}">회원가입</a>
                     {% endif %}
                 </li>
+                <li class="nav-item">
+                    {% if user.is_authenticated %}
+                        <a class="nav-link" href="{% url 'subscribe:create-subscribe' %}">등록</a>
+                    {% endif %}
+                </li>
             </ul>
         </div>
     </div>
