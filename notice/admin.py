@@ -9,4 +9,4 @@ class NoticeAdmin(admin.ModelAdmin):
     list_display = ('rss_link', 'updated_at')
 
 
-admin.register(Notice, NoticeAdmin)
+admin.site.register(Notice, NoticeAdmin)
