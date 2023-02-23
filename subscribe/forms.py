@@ -48,7 +48,7 @@ class CreateSubscribeForm(forms.Form):
         if notice_link and rss_link:
             notice_response: Response = get(notice_link)
             if not notice_response.ok:
-                raise forms.ValidationError('유효한 링크를 입력해주세요.')
+                raise forms.ValidationError('학과 링크 인증이 실패했습니다.')
 
             rss_link = rss_link.replace('https://', '').split('/')[0]
             notice_link = notice_link.replace('https://', '').split('/')[0]
