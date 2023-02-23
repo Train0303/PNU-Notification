@@ -14,7 +14,7 @@ class Notice(models.Model):
         ordering = ['updated_at']
 
     def is_valid(self, pub_date: datetime):
-        ten_minutes_later = self.updated_at - timedelta(hours=10)
+        ten_minutes_later = self.updated_at - timedelta(minutes=10)
         if ten_minutes_later < pub_date:
             return True
         return False
