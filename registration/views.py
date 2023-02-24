@@ -1,9 +1,11 @@
 from django.contrib.auth import login, get_user_model
 from django.contrib.auth.views import LoginView, FormView
+from django.contrib.auth.decorators import login_required
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import send_mail
 from django.conf import settings
 from django.http import JsonResponse
+from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
@@ -23,7 +25,6 @@ class SignUpView(FormView):
         user.email = form.cleaned_data.get('email')
         user.save()
         login(self.request, user)
-        send_verification_email(self.request, user)
         return super().form_valid(form)
 
 
@@ -33,7 +34,7 @@ class EmailLoginView(LoginView):
     redirect_authenticated_user = True # 이미 로그인 된 사용자라면, `LOGIN_REDIRECT_URL`로 이동, `settings.py`에 '/'로 정의.
 
 
-class EmailVerificationView(View):
+class EmailVerificationResultView(View):
     def get(self, request, uidb64, token):
         User = get_user_model()
         try:
@@ -52,8 +53,9 @@ class EmailVerificationView(View):
             return render(request, 'registration/verification_failed.html')
 
 
-# SendVerificationEmailView를 따로 만들기 ..
-def send_verification_email(request, user):
+@login_required
+def send_verification_email(request): # 이메일 전송과 관계없이 verification template을 먼저 띄우기 위해 async 사용
+    user = request.user
     current_site = get_current_site(request)
     uid = urlsafe_base64_encode(force_bytes(user.pk)).encode().decode()
     token = EmailVerificationTokenGenerator().make_token(user)
@@ -70,13 +72,13 @@ def send_verification_email(request, user):
     )
 
 
-### index test ###
-from django.shortcuts import render
 def index(request):
     return render(request, 'base.html')
 
 
+@login_required
 def verification(request):
+    send_verification_email(request)
     return render(request, 'registration/verification.html')
 
 
