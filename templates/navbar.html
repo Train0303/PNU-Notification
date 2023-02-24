@@ -26,8 +26,13 @@
                     {% endif %}
                 </li>
                 <li class="nav-item">
-                    {% if user.is_authenticated %}
+                    {% if user.is_authenticated and user.is_active %}
                         <a class="nav-link" href="{% url 'subscribe:create-subscribe' %}">등록</a>
+                    {% endif %}
+                </li>
+                <li class="nav_item">
+                    {% if user.is_authenticated and not user.is_active %}
+                        <a class="nav-link" href="{% url 'registration:verification' %}">이메일 인증</a>
                     {% endif %}
                 </li>
             </ul>
