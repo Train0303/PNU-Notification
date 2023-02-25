@@ -8,6 +8,7 @@ from django.db import transaction
 
 from .forms import CreateSubscribeForm, UpdateSubscribeForm
 from .models import Subscribe
+from .permission import WriterPermissionRequiredMixin
 from notice.models import Notice
 
 
@@ -37,11 +38,12 @@ class CreateSubscribeView(LoginRequiredMixin, FormView):
         return redirect(self.success_url)
 
 
-class UpdateSubscribeView(LoginRequiredMixin, View):
+class UpdateSubscribeView(WriterPermissionRequiredMixin, View):
     template_name: str = 'subscribe/update_subscribe.html'
     success_url: str = reverse_lazy('registration:index')
     login_url: str = reverse_lazy('registration:login')
     queryset = Subscribe.objects.select_related("notice")
+    check_permission_path_variable = 'pk'
 
     def get_object(self, pk):
         return get_object_or_404(Subscribe.objects.select_related("notice"), pk=pk)
