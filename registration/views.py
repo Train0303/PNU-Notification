@@ -34,32 +34,30 @@ class EmailLoginView(LoginView):
     redirect_authenticated_user = True # 이미 로그인 된 사용자라면, `LOGIN_REDIRECT_URL`로 이동, `settings.py`에 '/'로 정의.
 
 
-class EmailVerificationResultView(View):
+class EmailVerificationEnableView(View):
     def get(self, request, uidb64, token):
         User = get_user_model()
         try:
             uid = force_str(urlsafe_base64_decode(uidb64))
             user = User.objects.get(pk=uid)
             if user.is_active: # 이미 이메일 인증에 성공한 상태에서 다시 한번 링크를 누를 경우,
-                return render(request, 'registration/verification_success.html')  # 성공 page로 이동
+                return render(request, 'registration/verification_result.html')  # 성공 page로 이동
         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
             user = None
 
         if user is not None and EmailVerificationTokenGenerator().check_token(user, token):
             user.is_active = True
             user.save()
-            return render(request, 'registration/verification_success.html')
-        else:
-            return render(request, 'registration/verification_failed.html')
+        return render(request, 'registration/verification_result.html')
 
 
 @login_required
-def send_verification_email(request): # 이메일 전송과 관계없이 verification template을 먼저 띄우기 위해 async 사용
+def send_verification_email(request):
     user = request.user
     current_site = get_current_site(request)
     uid = urlsafe_base64_encode(force_bytes(user.pk)).encode().decode()
     token = EmailVerificationTokenGenerator().make_token(user)
-    verification_url = reverse('registration:verification_success', args=[uid, token])
+    verification_url = reverse('registration:verification_enable', args=[uid, token])
     verification_link = 'http://' + current_site.domain + verification_url
 
     print(f'verification_link : {verification_link}')
@@ -73,7 +71,7 @@ def send_verification_email(request): # 이메일 전송과 관계없이 verific
 
 
 def index(request):
-    return render(request, 'base.html')
+    return render(request, 'index.html')
 
 
 @login_required

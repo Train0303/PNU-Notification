@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="container my-3">
+<div class="container my-5">
     <form method="post" action="{% url 'registration:login' %}">
         {% csrf_token %}
         {% include "form_errors.html" %}
