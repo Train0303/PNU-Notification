@@ -1,5 +1,5 @@
 from django.contrib.auth import login, get_user_model
-from django.contrib.auth.views import LoginView, FormView
+from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import send_mail
@@ -15,7 +15,9 @@ from .forms import EmailAuthenticationForm, CustomUserCreationForm
 from .token import EmailVerificationTokenGenerator
 
 
-class SignUpView(FormView):
+User = get_user_model()
+
+class SignUpView(auth_views.FormView):
     template_name = 'registration/signup.html'
     form_class = CustomUserCreationForm
     success_url = reverse_lazy('registration:verification') # 이메일 인증 template으로 이동
@@ -28,15 +30,14 @@ class SignUpView(FormView):
         return super().form_valid(form)
 
 
-class EmailLoginView(LoginView):
+class LoginView(auth_views.LoginView):
     template_name = 'registration/login.html'
     authentication_form = EmailAuthenticationForm
     redirect_authenticated_user = True # 이미 로그인 된 사용자라면, `LOGIN_REDIRECT_URL`로 이동, `settings.py`에 '/'로 정의.
 
 
-class EmailVerificationEnableView(View):
+class EmailVerificationResultView(View):
     def get(self, request, uidb64, token):
-        User = get_user_model()
         try:
             uid = force_str(urlsafe_base64_decode(uidb64))
             user = User.objects.get(pk=uid)
@@ -51,8 +52,40 @@ class EmailVerificationEnableView(View):
         return render(request, 'registration/verification_result.html')
 
 
+# Password관련 View는 auth_views의 Class를 Override하여, 경로만 바꿔주었습니다.
+class PasswordResetView(auth_views.PasswordResetView):
+    """
+    비밀번호 초기화 - 사용자 email 입력
+    """
+    success_url = reverse_lazy('registration:password_reset_done')
+
+
+class PasswordResetDoneView(auth_views.PasswordResetDoneView):
+    """
+    비밀번호 초기화 - 메일 전송 완료
+    """
+    template_name = 'registration/password_reset_done.html'
+
+
+class PasswordResetConfirmView(auth_views.PasswordResetConfirmView):
+    """
+    비밀번호 초기화 - 새로운 비밀번호 입력
+    """
+    success_url = reverse_lazy('registration:password_reset_complete')
+
+
+class PasswordResetCompleteView(auth_views.PasswordResetCompleteView):
+    """
+    비밀번호 초기화 - 비밀번호 변경 완료
+    """
+    template_name = 'registration/password_reset_complete.html'
+
+
 @login_required
 def send_verification_email(request):
+    """
+    현재 로그인 중인 유저에게 인증 메일을 보내는 함수
+    """
     user = request.user
     current_site = get_current_site(request)
     uid = urlsafe_base64_encode(force_bytes(user.pk)).encode().decode()
@@ -61,17 +94,30 @@ def send_verification_email(request):
     verification_link = 'http://' + current_site.domain + verification_url
 
     print(f'verification_link : {verification_link}')
+
+    message = f"""
+            이메일을 활성화하기 위해, 아래 링크를 눌러 이메일 인증을 완료해주세요.\n\n
+            {verification_link}\n\n
+            본인이 모르는 사실이라면, 이 메일을 무시하시면 됩니다.
+            """
+
     send_mail(
-        'verify your email',
-        f'아래 링크를 눌러 이메일 인증을 완료해주세요:\n\n{verification_link}',
-        settings.DEFAULT_FROM_EMAIL,
-        [user.email],
-        fail_silently=False,
+        subject='[PNU-Notification] Verify Your Email',
+        message=message,
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        recipient_list=[user.email]
     )
 
 
 def index(request):
-    return render(request, 'index.html')
+    user = request.user
+    if not user.is_authenticated:
+        return render(request, 'registration/login.html')
+    else:
+        if not user.is_active:
+            return render(request, 'registration/verification_need.html')
+        else:
+            return render(request, 'subscribe/create_subscribe.html')
 
 
 @login_required
@@ -82,7 +128,6 @@ def verification(request):
 
 def check_email_duplication(request):
     email = request.GET.get('email', None)
-    User = get_user_model()
     data = {
         'is_exists': User.objects.filter(email__iexact=email).exists()
     }
