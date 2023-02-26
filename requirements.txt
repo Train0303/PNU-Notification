@@ -18,4 +18,3 @@ sqlparse==0.4.3
 tomli==2.0.1
 urllib3==1.26.14
 xmltodict==0.13.0
-six==1.16.0
