@@ -9,6 +9,9 @@ class EmailAuthenticationForm(AuthenticationForm):
         widget=forms.TextInput(
         attrs={'autofocus': True}))
 
+    def confirm_login_allowed(self, user): # is_active가 False인 경우에도 Login은 가능하도록 설정
+        return None
+
 
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True)
