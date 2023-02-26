@@ -90,7 +90,7 @@ def send_verification_email(request):
     current_site = get_current_site(request)
     uid = urlsafe_base64_encode(force_bytes(user.pk)).encode().decode()
     token = EmailVerificationTokenGenerator().make_token(user)
-    verification_url = reverse('registration:verification_enable', args=[uid, token])
+    verification_url = reverse('registration:verification_result', args=[uid, token])
     verification_link = 'http://' + current_site.domain + verification_url
 
     print(f'verification_link : {verification_link}')
