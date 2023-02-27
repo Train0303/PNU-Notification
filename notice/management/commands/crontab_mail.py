@@ -27,8 +27,7 @@ def save_notice(notice: Notice):
 @sync_to_async
 def get_user_subscribes(notice: Notice):
     qs: List[Subscribe] = list(Subscribe.objects.filter(is_active=True, notice=notice)
-                               .select_related('user')
-                               .select_related('notice'))
+                               .select_related('user', 'notice'))
     return qs
 
 
