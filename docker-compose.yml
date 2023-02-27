@@ -1,0 +1,33 @@
+version: "3.1"
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: web
+    volumes:
+      - ./:/app/
+    tty: true
+#    environment:
+#      - DJANGO_DEBUG=False
+    command:
+      - bash
+      - -c
+      - |
+        python manage.py makemigrations
+        python manage.py migrate
+        gunicorn pnuNoti.wsgi:application --bind 0.0.0.0:8000
+
+  nginx:
+    image: nginx:latest
+    container_name: server_nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./config/nginx:/etc/nginx/conf.d
+      - ./.staticfiles:/static
+    environment:
+      - TZ=Asia/Seoul
+    depends_on:
+      - web
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
