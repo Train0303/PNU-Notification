@@ -17,6 +17,8 @@ services:
         python manage.py makemigrations
         python manage.py migrate
         gunicorn pnuNoti.wsgi:application --bind 0.0.0.0:8000
+    networks:
+      - pnu_noti
 
   nginx:
     image: nginx:latest
@@ -31,3 +33,10 @@ services:
     depends_on:
       - web
     command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+
+    networks:
+      - pnu_noti
+
+networks:
+  pnu_noti:
+    driver: bridge

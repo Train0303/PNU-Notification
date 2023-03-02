@@ -112,6 +112,12 @@ def send_verification_email(request):
 
 
 def index(request):
+    """
+    프로젝트 메인 페이지
+    비로그인: 로그인 페이지 렌더
+    미인증: 인증 요청 페이지 렌더
+    로그인: 구독한 목록을 보여준다.
+    """
     user = request.user
     if not user.is_authenticated:
         return render(request, 'registration/login.html')
