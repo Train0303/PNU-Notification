@@ -4,11 +4,11 @@
 <div class="container my-5">
     <form method="post" action="{% url 'registration:signup' %}">
         {% csrf_token %}
-        <h2>회원가입</h2>
-        <p class="description">부산대학교 공지사항을 가입한 메일로 받을 수 있습니다.</p>
+        <h2>PNU 이메일 알림 회원가입</h2>
+        <p class="description">회원가입하여 부산대학교 공지사항을 이메일로 받아볼 수 있습니다.</p>
         {% include "form_errors.html" %}
         <div class="mb-3">
-            <label for="email" id="label-email"><span id="email-address">이메일</span><span id="email-duplication-check"></span></label>
+            <label for="email">이메일 주소<span id="email-duplication-check" style="margin-left:50px"></span></label>
             <input type="text" class="form-control" name="email" id="email" placeholder="예) pnu@naver.com"
                    value="{{ form.email.value|default_if_none:'' }}">
         </div>
@@ -22,9 +22,7 @@
             <input type="password" class="form-control" name="password2" id="password2"
                    value="{{ form.password2.value|default_if_none:'' }}">
         </div>
-        <div class="btn-submit">
-            <button type="submit" class="btn btn-primary">생성하기</button>
-        </div>
+        <button type="submit" class="btn btn-primary">생성하기</button>
     </form>
 </div>
 {% endblock %}
