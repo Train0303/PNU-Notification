@@ -29,7 +29,7 @@ class LoggingMiddleware:
         log_data["status_code"] = response.status_code
         log_data["response_time"] = response_time
 
-        logger.info(msg=' '.join(map(str, log_data.values())))
+        logger.info(msg=log_data)
 
         if str(response.status_code).startswith('5'):
             error_message = 'Internal Server Error'
