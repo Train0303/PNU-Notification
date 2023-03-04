@@ -8,16 +8,13 @@ emailInput.addEventListener('blur', () => {
         .then(response => response.json())
         .then(data => {
             if (data.is_exists) {
-                emailError.textContent = '이미 사용중인 이메일입니다';
-                emailError.style.color = 'red';
+                emailError.textContent = '이미 사용중인 이메일입니다.';
             } else {
                 if (regex.test(email)) {
-                    emailError.textContent = '사용 가능한 이메일입니다';
-                    emailError.style.color = 'blue';
+                    emailError.textContent = '사용 가능한 이메일입니다.';
                 }
                 else {
-                    emailError.textContent = '올바른 이메일을 입력해주세요';
-                    emailError.style.color = 'red';
+                    emailError.textContent = '올바른 이메일을 입력해주세요.';
                 }
             }
         });
