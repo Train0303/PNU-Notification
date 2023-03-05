@@ -18,7 +18,7 @@ class LoggingMiddleware:
 
         log_data = {
             "remote_address": request.META['REMOTE_ADDR'],
-            "user_email": request.user.email if request.user else "anonymous",
+            "user_email": request.user.email if request.user.is_authenticated else "anonymous",
             "request_method": request.method,
             "request_path": request.get_full_path(),
             "query_params": dict(request.GET.items()),
