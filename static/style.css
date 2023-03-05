@@ -8,6 +8,10 @@
     font-weight: bold;
 }
 
+.navbar img {
+    height: 80px;
+}
+
 .container {
     margin-top: 100px!important;
     width: 30%;
@@ -18,9 +22,12 @@
     margin-top: 50px;
 }
 
+.btn-primary, .btn-danger {
+    border-radius: 30px;
+}
+
 .btn-primary {
     width: inherit;
-    border-radius: 30px;
     background-color: rgba(116, 195, 227, 0.87);
     border-width: 0;
 }
@@ -76,4 +83,13 @@ label {
 .logout {
     position: absolute;
     right: 10%;
+}
+
+#subscribe-container {
+    width: 500px;
+}
+
+#subscribe-submit {
+    justify-content: space-between;
+    display:flex;
 }
