@@ -1,16 +1,12 @@
-/* class : '.'   id : '#' */
-
 .navbar {
     height: 80px;
 }
-
 
 .navbar-brand {
     padding: 0px 15px 0px 15px;
     font-size: 30px;
     font-weight: bold;
 }
-
 
 .container {
     margin-top: 100px!important;
@@ -27,6 +23,10 @@
     border-radius: 30px;
     background-color: rgba(116, 195, 227, 0.87);
     border-width: 0;
+}
+
+.toggle-group label {
+    width: 50%;
 }
 
 .signup {

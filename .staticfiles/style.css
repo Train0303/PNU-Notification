@@ -1,0 +1,79 @@
+.navbar {
+    height: 80px;
+}
+
+.navbar-brand {
+    padding: 0px 15px 0px 15px;
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.container {
+    margin-top: 100px!important;
+    width: 30%;
+}
+
+.login {
+    width: 100%;
+    margin-top: 50px;
+}
+
+.btn-primary {
+    width: inherit;
+    border-radius: 30px;
+    background-color: rgba(116, 195, 227, 0.87);
+    border-width: 0;
+}
+
+.toggle-group label {
+    width: 50%;
+}
+
+.signup {
+    display: flex;
+    justify-content: space-evenly;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+#signup, #find_password {
+    width: 49%;
+    font-size: 13px;
+    padding: 0px;
+    border-radius: 0;
+}
+
+#signup {
+    border-right: 2px solid lightgray;
+}
+
+input::placeholder{
+    font-size: 15px;
+}
+
+label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    width: 100%;
+    display: flex;
+}
+
+#email-duplication-check {
+    font-size: 12px;
+    font-weight: normal;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+#label-email {
+    justify-content: space-between;
+}
+
+.btn-submit {
+    text-align : end;
+}
+
+.logout {
+    position: absolute;
+    right: 10%;
+}
