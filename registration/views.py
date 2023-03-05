@@ -51,7 +51,7 @@ class EmailVerificationResultView(View):
         if user is not None and EmailVerificationTokenGenerator().check_token(user, token):
             user.is_active = True
             user.save()
-        return render(request, 'registration/verification_result.html')
+        return render(request, 'registration/verification_result.html', context={'user':user})
 
 
 # Password관련 View는 auth_views의 Class를 Override하여, 경로만 바꿔주었습니다.
