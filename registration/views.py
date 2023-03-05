@@ -13,7 +13,9 @@ from django.views import View
 
 from .forms import EmailAuthenticationForm, CustomUserCreationForm
 from .token import EmailVerificationTokenGenerator
+from subscribe.models import Subscribe
 
+from typing import *
 
 User = get_user_model()
 
@@ -110,14 +112,32 @@ def send_verification_email(request):
 
 
 def index(request):
+    """
+    프로젝트 메인 페이지
+    비로그인: 로그인 페이지 렌더
+    미인증: 인증 요청 페이지 렌더
+    로그인: 구독한 목록을 보여준다.
+    """
     user = request.user
     if not user.is_authenticated:
         return render(request, 'registration/login.html')
-    else:
-        if not user.is_active:
-            return render(request, 'registration/verification_need.html')
-        else:
-            return render(request, 'subscribe/create_subscribe.html')
+
+    if not user.is_active:
+        return render(request, 'registration/verification_need.html')
+
+    subscribes: List[Subscribe] = Subscribe.objects.select_related('notice').filter(user=user)
+    context_data = {
+        'subscribes': list(
+            map(lambda subscribe: {
+                'id': subscribe.id,
+                'title': subscribe.title,
+                'RSS': subscribe.notice.rss_link,
+                'last_updated': subscribe.notice.updated_at,
+                'is_active': subscribe.is_active
+            }, subscribes)
+        )
+    }
+    return render(request, 'registration/index.html', context=context_data)
 
 
 @login_required

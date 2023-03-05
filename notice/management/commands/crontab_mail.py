@@ -18,6 +18,7 @@ from datetime import datetime
 import time
 
 
+# @sync_to_async를 안해주면 장고는 비동기 db접속을 거부한다.
 @sync_to_async
 def save_notice(notice: Notice):
     notice.updated_at = timezone.now()
@@ -27,12 +28,14 @@ def save_notice(notice: Notice):
 @sync_to_async
 def get_user_subscribes(notice: Notice):
     qs: List[Subscribe] = list(Subscribe.objects.filter(is_active=True, notice=notice)
-                               .select_related('user')
-                               .select_related('notice'))
+                               .select_related('user', 'notice'))
     return qs
 
 
 async def send_rss_to_user(notice: Notice):
+    """
+    특정 학과의 공지사항을 받아와 마지막 갱신 시간보다 뒤에 등록된 글들을 구독한 회원들에게 메일전송
+    """
     start_time = time.time()
     response: Response = get(url=notice.rss_link)
     res_xml: dict = xmltodict.parse(response.text)
@@ -68,6 +71,10 @@ async def send_rss_to_user(notice: Notice):
 
 
 class Command(BaseCommand):
+    """
+    특정 학과의 공지사항이 갱신되면 구독한 회원들에게 메일을 보내주는 로직
+    Crontab으로 동작
+    """
     help = '공지사항 이메일 전송입니다.'
 
     def handle(self, *args: Any, **options: Any) -> NoReturn:
