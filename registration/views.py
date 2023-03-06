@@ -1,9 +1,11 @@
+from typing import *
+
+from django.conf import settings
 from django.contrib.auth import login, get_user_model
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import send_mail
-from django.conf import settings
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
@@ -11,11 +13,9 @@ from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.views import View
 
+from subscribe.models import Subscribe
 from .forms import EmailAuthenticationForm, CustomUserCreationForm
 from .token import EmailVerificationTokenGenerator
-from subscribe.models import Subscribe
-
-from typing import *
 
 User = get_user_model()
 
@@ -58,8 +58,18 @@ class EmailVerificationResultView(View):
 class PasswordResetView(auth_views.PasswordResetView):
     """
     비밀번호 초기화 - 사용자 email 입력
+    + 찾고자 하는 이메일이 없다면, 메일 발송 하지 않음
     """
     success_url = reverse_lazy('registration:password_reset_done')
+
+    def post(self, request, *args, **kwargs):
+        email = request.POST.get('email')
+        try:
+            user = User.objects.get(email=email)
+            return super().post(request, *args, **kwargs)
+        except User.DoesNotExist:
+            context = {'msg': f"{email} : 존재하지 않는 이메일입니다. 회원가입을 진행해주세요."}
+            return render(request, 'registration/password_reset_form.html', context=context)
 
 
 class PasswordResetDoneView(auth_views.PasswordResetDoneView):

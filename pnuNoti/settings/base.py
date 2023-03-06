@@ -106,7 +106,7 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = get_secret("EMAIL_HOST")
 EMAIL_HOST_PASSWORD = get_secret("EMAIL_PASSWORD")
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-EMAIL_ADMIN = get_secret("EMAIL_ADMIN") # internal server error 발생 시, 메일을 받는 admin
+ADMINS = [(get_secret("EMAIL_ADMIN_USERNAME"), get_secret("EMAIL_ADMIN"))] # internal server error 발생 시, 메일을 받는 admin (username, email)
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
@@ -189,8 +189,9 @@ LOGGING = {
         },
         'mail_admins': {
             'level': 'ERROR',
-            'filters': ['require_debug_false'],
-            'class': 'django.utils.log.AdminEmailHandler'
+            'filters': ['require_debug_false'], # 배포 시에만 허용
+            'class': 'django.utils.log.AdminEmailHandler',
+            'include_html': True,
         },
         # User Custom Start
         'file': {
@@ -213,6 +214,11 @@ LOGGING = {
         'django.server': {
             'handlers': ['django.server', 'mail_admins'],
             'level': 'INFO',
+            'propagate': False,
+        },
+        'django.request': {
+            'handlers': ['mail_admins', 'file'],
+            'level': 'ERROR',
             'propagate': False,
         },
         'registration': {
