@@ -106,7 +106,8 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = get_secret("EMAIL_HOST")
 EMAIL_HOST_PASSWORD = get_secret("EMAIL_PASSWORD")
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-ADMINS = [(get_secret("EMAIL_ADMIN_USERNAME"), get_secret("EMAIL_ADMIN"))] # internal server error 발생 시, 메일을 받는 admin (username, email)
+EMAIL_ADMIN = get_secret("EMAIL_ADMIN")
+ADMINS = [(e[0], e[1],) for e in EMAIL_ADMIN] # internal server error 발생 시, 메일을 받는 admin (username, email)
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
