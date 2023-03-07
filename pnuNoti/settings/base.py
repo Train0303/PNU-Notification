@@ -152,7 +152,7 @@ AUTH_USER_MODEL = 'registration.CustomUser'
 
 # Logging Settings
 
-os.makedirs('./logs', exist_ok=True)
+os.makedirs('./logs/request_logs', exist_ok=True)
 
 LOGGING = {
     'version': 1,
@@ -200,7 +200,7 @@ LOGGING = {
             'encoding': 'utf-8',
             # 'filters': ['require_debug_false'],
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': BASE_DIR / 'logs/pnuNoti.log',
+            'filename': BASE_DIR / 'logs/request_logs/pnuNoti.log',
             'maxBytes': 1024*1024*5,  # 5 MB
             'backupCount': 5,
             'formatter': 'standard',
