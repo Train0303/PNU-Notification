@@ -20,8 +20,6 @@
                     <li class="nav-item">
                         {% if user.is_active %}
                             <a class="nav-link" href="{% url 'subscribe:create-subscribe' %}">등록</a>
-                        {% else %}
-                            <a class="nav-link" href="{% url 'registration:verification' %}">이메일 인증</a>
                         {% endif %}
                     </li>
                     <li class="nav-item">

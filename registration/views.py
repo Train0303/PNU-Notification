@@ -5,7 +5,6 @@ from django.contrib.auth import login, get_user_model
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.contrib.sites.shortcuts import get_current_site
-from django.core.mail import send_mail
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
@@ -14,6 +13,7 @@ from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.views import View
 
 from subscribe.models import Subscribe
+from .async_send_mail import async_send_mail
 from .forms import EmailAuthenticationForm, CustomUserCreationForm
 from .token import EmailVerificationTokenGenerator
 
@@ -93,7 +93,6 @@ class PasswordResetCompleteView(auth_views.PasswordResetCompleteView):
     template_name = 'registration/password_reset_complete.html'
 
 
-@login_required
 def send_verification_email(request):
     """
     현재 로그인 중인 유저에게 인증 메일을 보내는 함수
@@ -113,11 +112,12 @@ def send_verification_email(request):
             본인이 모르는 사실이라면, 이 메일을 무시하시면 됩니다.
             """
 
-    send_mail(
+    async_send_mail(
         subject='[PNU-Notification] Verify Your Email',
         message=message,
         from_email=settings.DEFAULT_FROM_EMAIL,
-        recipient_list=[user.email]
+        recipient_list=[user.email],
+        fail_silently= False
     )
 
 

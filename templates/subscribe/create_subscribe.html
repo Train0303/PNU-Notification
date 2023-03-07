@@ -8,7 +8,7 @@
 
         <div class="mb-3">
             <label for="등록">등록명 (필수)</label>
-            <input type="text" class="form-control" name="title" id="title" placeholder="예) 컴공 공지"
+            <input type="text" class="form-control" name="title" id="title" placeholder="예) '컴공 공지'라고 입력 시, 이메일 제목에 '컴공 공지: ' 추가"
                    value="{{ form.title.value|default_if_none:'' }}">
             <br>
             <label for="RSS">RSS링크 (필수)</label>
@@ -20,7 +20,7 @@
                    value="{{ form.notice_link.value|default_if_none:'' }}">
         </div>
         <div id="subscribe-submit">
-            <a href="../static/subscribe/userguide.png" class="btn btn-primary">설명 사진</a>
+            <a href="../static/subscribe/userguide.png" class="btn btn-primary" target="_blank">설명 사진</a>
             <button type="submit" class="btn btn-primary">등록하기</button>
         </div>
     </form>
