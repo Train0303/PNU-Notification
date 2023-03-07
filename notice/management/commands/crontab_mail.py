@@ -20,16 +20,15 @@ import time
 
 # @sync_to_async를 안해주면 장고는 비동기 db접속을 거부한다.
 @sync_to_async
-def save_notice(notice: Notice):
-    notice.updated_at = timezone.now()
-    notice.save()
-
-
-@sync_to_async
 def get_user_subscribes(notice: Notice):
     qs: List[Subscribe] = list(Subscribe.objects.filter(is_active=True, notice=notice)
                                .select_related('user', 'notice'))
     return qs
+
+
+@sync_to_async
+def reject_subscribe_email(failed_user: Set[str]):
+    Subscribe.objects.filter(user__email__in=list(failed_user)).update(is_active=False)
 
 
 async def send_rss_to_user(notice: Notice):
@@ -50,7 +49,7 @@ async def send_rss_to_user(notice: Notice):
     valid_items.reverse()
 
     user_subscribes: List[Subscribe] = await get_user_subscribes(notice)
-
+    failed_mail_users = set()
     for valid_item in valid_items:
         valid_item['pubDate'] = valid_item['pubDate'].strftime("%Y-%m-%d %H:%M")
         for s in user_subscribes:
@@ -63,11 +62,14 @@ async def send_rss_to_user(notice: Notice):
                 'recipient_list': [s.user.email],
                 'fail_silently': False
             }
-            send_mail(**send_mail_data)
-            # print(send_mail_data['message'])
-            # print(f"{s.title}/{s.user}/{s.notice.rss_link}")
+            mail_result = send_mail(**send_mail_data)
+            if mail_result != 1:
+                failed_mail_users.add(s.user.email)
+
+    if failed_mail_users:
+        await reject_subscribe_email(failed_mail_users)
+
     print(f"{notice.rss_link}'s Execute Time = ", time.time()-start_time)
-    await save_notice(notice)
 
 
 class Command(BaseCommand):
@@ -84,5 +86,5 @@ class Command(BaseCommand):
         tasks = list(map(lambda x: asyncio.ensure_future(send_rss_to_user(x)), rss_datas))
         if tasks:
             loop.run_until_complete(asyncio.wait(tasks))
-
+        Notice.objects.all().update(updated_at=timezone.now())
         print("Total Execute Time = ", time.time() - start_time, "s")
