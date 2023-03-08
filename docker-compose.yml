@@ -1,10 +1,10 @@
 version: "3.1"
 services:
-  web:
+  pnu-web:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: web
+    container_name: server_django
     volumes:
       - ./:/app/
     tty: true
@@ -37,7 +37,7 @@ services:
     environment:
       - TZ=Asia/Seoul
     depends_on:
-      - web
+      - pnu-web
     command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
 
     networks:
