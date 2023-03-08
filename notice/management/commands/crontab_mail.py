@@ -30,6 +30,11 @@ def get_user_subscribes(notice: Notice):
 def reject_subscribe_email(failed_user: Set[str]):
     Subscribe.objects.filter(user__email__in=list(failed_user)).update(is_active=False)
 
+@sync_to_async
+def update_exec_time(notice: Notice, last_data_time: datetime):
+    notice.updated_at = last_data_time
+    notice.save()
+
 
 async def send_rss_to_user(notice: Notice):
     """
@@ -46,6 +51,7 @@ async def send_rss_to_user(notice: Notice):
         'author': x['author']}, res_items)
 
     valid_items = list(filter(lambda x: notice.is_valid(x['pubDate']), res_filter))
+    last_data_time = valid_items[0]["pubDate"]
     valid_items.reverse()
 
     user_subscribes: List[Subscribe] = await get_user_subscribes(notice)
@@ -69,8 +75,7 @@ async def send_rss_to_user(notice: Notice):
     if failed_mail_users:
         await reject_subscribe_email(failed_mail_users)
 
-    print(f"{notice.rss_link}'s Execute Time = ", time.time()-start_time)
-
+    await update_exec_time(notice, last_data_time)
 
 class Command(BaseCommand):
     """
@@ -82,6 +87,7 @@ class Command(BaseCommand):
     def handle(self, *args: Any, **options: Any) -> NoReturn:
         rss_datas = Notice.objects.all()[:]
         start_time = time.time()
+
         loop = asyncio.get_event_loop()
         tasks = list(map(lambda x: asyncio.ensure_future(send_rss_to_user(x)), rss_datas))
         if tasks:
