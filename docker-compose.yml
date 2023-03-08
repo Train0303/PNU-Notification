@@ -15,7 +15,7 @@ services:
       - -c
       - |
         chmod +x /app/config/cron/cron.sh
-        crontab -r
+        crontab -l | grep -v "*/30 * * * * bash /app/config/cron/cron.sh" | crontab -
         crontab -l | { cat; echo "*/30 * * * * bash /app/config/cron/cron.sh" } | crontab -
         cron
         crontab -l
