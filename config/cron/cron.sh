@@ -21,6 +21,7 @@ exec 2>&1 1>>"$log_file"
 # Note: it is not a good practice to source in .profile or .bashrc here
 #
 # source /path/to/setup_env.sh
+export PATH=$(/usr/bin/getconf PATH):/usr/local/bin
 export DJANGO_DEBUG=False
 export DJANGO_SETTINGS_MODULE=pnuNoti.settings.prod
 

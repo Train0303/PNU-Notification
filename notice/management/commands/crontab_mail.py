@@ -39,6 +39,19 @@ def update_exec_time(notice: Notice, last_data_time: datetime):
 async def send_mail_async(send_mail_data):
     return send_mail(**send_mail_data)
 
+
+def get_message(user_subscribe, valid_item):
+    if user_subscribe.notice_link:
+        return f"""게시글 링크: {valid_item.get('link')}
+공지사항 링크: {user_subscribe.notice_link}
+작성시간: {valid_item.get('pubDate')}
+작성자: {valid_item.get('author')}"""
+
+    return f"""게시글 링크: {valid_item.get('link')}
+작성시간: {valid_item.get('pubDate')}
+작성자: {valid_item.get('author')}"""
+
+
 async def send_rss_to_user(notice: Notice):
     """
     특정 학과의 공지사항을 받아와 마지막 갱신 시간보다 뒤에 등록된 글들을 구독한 회원들에게 메일전송
@@ -65,9 +78,7 @@ async def send_rss_to_user(notice: Notice):
         for s in user_subscribes:
             send_mail_data = {
                 'subject': f"{s.title}: {valid_item.get('notice_title')}",
-                'message': f"""게시글 링크: {valid_item.get('link')}
-작성시간: {valid_item.get('pubDate')}
-작성자: {valid_item.get('author')}""",
+                'message': get_message(s, valid_item),
                 'from_email': settings.EMAIL_HOST_USER,
                 'recipient_list': [s.user.email],
                 'fail_silently': False
