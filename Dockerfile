@@ -7,7 +7,7 @@ LABEL version="0.1"
 LABEL description="PnuNotification's Django Application"
 
 ENV PYTHONUNBUFFERED=0
-ENV TZ=Asia/Seoul
+#ENV TZ=Asia/Seoul
 ENV DJANGO_SETTINGS_MODULE=pnuNoti.settings.prod
 
 WORKDIR /app

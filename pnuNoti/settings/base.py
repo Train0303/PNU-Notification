@@ -99,13 +99,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # Email
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_USE_TLS = True
-EMAIL_PORT = 587
-EMAIL_HOST_USER = get_secret("EMAIL_HOST")
-EMAIL_HOST_PASSWORD = get_secret("EMAIL_PASSWORD")
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 EMAIL_ADMIN = get_secret("EMAIL_ADMIN")
 ADMINS = [(e[0], e[1],) for e in EMAIL_ADMIN] # internal server error 발생 시, 메일을 받는 admin (username, email)
 
@@ -152,7 +145,7 @@ AUTH_USER_MODEL = 'registration.CustomUser'
 
 # Logging Settings
 
-os.makedirs('./logs', exist_ok=True)
+os.makedirs('./logs/request_logs', exist_ok=True)
 
 LOGGING = {
     'version': 1,
@@ -200,7 +193,7 @@ LOGGING = {
             'encoding': 'utf-8',
             # 'filters': ['require_debug_false'],
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': BASE_DIR / 'logs/pnuNoti.log',
+            'filename': BASE_DIR / 'logs/request_logs/pnuNoti.log',
             'maxBytes': 1024*1024*5,  # 5 MB
             'backupCount': 5,
             'formatter': 'standard',
