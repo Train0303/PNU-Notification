@@ -36,11 +36,13 @@ def update_exec_time(notice: Notice, last_data_time: datetime):
     notice.save()
 
 
+async def send_mail_async(send_mail_data):
+    return send_mail(**send_mail_data)
+
 async def send_rss_to_user(notice: Notice):
     """
     특정 학과의 공지사항을 받아와 마지막 갱신 시간보다 뒤에 등록된 글들을 구독한 회원들에게 메일전송
     """
-    start_time = time.time()
     response: Response = get(url=notice.rss_link)
     res_xml: dict = xmltodict.parse(response.text)
     res_items: List[dict] = res_xml['rss']['channel']['item']
@@ -51,26 +53,28 @@ async def send_rss_to_user(notice: Notice):
         'author': x['author']}, res_items)
 
     valid_items = list(filter(lambda x: notice.is_valid(x['pubDate']), res_filter))
-    last_data_time = valid_items[0]["pubDate"]
+    last_data_time = valid_items[0]["pubDate"] if valid_items else timezone.now()
     valid_items.reverse()
 
     user_subscribes: List[Subscribe] = await get_user_subscribes(notice)
+
     failed_mail_users = set()
     for valid_item in valid_items:
         valid_item['pubDate'] = valid_item['pubDate'].strftime("%Y-%m-%d %H:%M")
+        tasks = []
         for s in user_subscribes:
             send_mail_data = {
                 'subject': f"{s.title}: {valid_item.get('notice_title')}",
                 'message': f"""게시글 링크: {valid_item.get('link')}
 작성시간: {valid_item.get('pubDate')}
 작성자: {valid_item.get('author')}""",
-                'from_email': settings.EMAIL_HOST,
+                'from_email': settings.EMAIL_HOST_USER,
                 'recipient_list': [s.user.email],
                 'fail_silently': False
             }
-            mail_result = send_mail(**send_mail_data)
-            if mail_result != 1:
-                failed_mail_users.add(s.user.email)
+            tasks.append(send_mail_async(send_mail_data))
+
+        failed_mail_users.update([task for task in await asyncio.gather(*tasks) if task != 1])
 
     if failed_mail_users:
         await reject_subscribe_email(failed_mail_users)
@@ -87,10 +91,9 @@ class Command(BaseCommand):
     def handle(self, *args: Any, **options: Any) -> NoReturn:
         rss_datas = Notice.objects.all()[:]
         start_time = time.time()
-
         loop = asyncio.get_event_loop()
         tasks = list(map(lambda x: asyncio.ensure_future(send_rss_to_user(x)), rss_datas))
         if tasks:
             loop.run_until_complete(asyncio.wait(tasks))
-        Notice.objects.all().update(updated_at=timezone.now())
+        # Notice.objects.all().update(updated_at=timezone.now())
         print("Total Execute Time = ", time.time() - start_time, "s")

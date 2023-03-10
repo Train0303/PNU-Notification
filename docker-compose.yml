@@ -8,14 +8,15 @@ services:
     volumes:
       - ./:/app/
     tty: true
-#    environment:
+    environment:
+      TZ: "Asia/Seoul"
 #      - DJANGO_DEBUG=False
     command:
       - bash
       - -c
       - |
         chmod +x /app/config/cron/cron.sh;
-        ( crontab -l | grep -v "*/30 * * * * bash /app/config/cron/cron.sh" ; echo "*/30 * * * * bash /app/config/cron/cron.sh" ) | crontab -;
+        ( crontab -l | grep -v "*/30 * * * * bash /app/config/cron/cron.sh" ; echo "CRON_TZ=Asia/Seoul" ; echo "*/30 * * * * bash /app/config/cron/cron.sh" ) | crontab -
         cron;
         crontab -l;
         python manage.py makemigrations;
