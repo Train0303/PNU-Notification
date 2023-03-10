@@ -6,6 +6,7 @@ pymysql.install_as_MySQLdb()
 
 # 설정한 도메인만 가능하도록 변경
 ALLOWED_HOSTS = ['pnunoti.site', 'www.pnunoti.site']
+CSRF_TRUSTED_ORIGINS = ['pnunoti.site', 'www.pnunoti.site']
 DEBUG = False
 
 MYSQL_USER = get_secret("MYSQL_USER")
