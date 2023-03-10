@@ -79,7 +79,7 @@ async def send_rss_to_user(notice: Notice):
             send_mail_data = {
                 'subject': f"{s.title}: {valid_item.get('notice_title')}",
                 'message': get_message(s, valid_item),
-                'from_email': settings.EMAIL_HOST_USER,
+                'from_email': settings.DEFAULT_FROM_EMAIL,
                 'recipient_list': [s.user.email],
                 'fail_silently': False
             }
