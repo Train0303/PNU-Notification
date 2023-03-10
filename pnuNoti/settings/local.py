@@ -3,6 +3,9 @@ from .base import *
 ALLOWED_HOSTS = ["*"]
 DEBUG = True
 
+ADMIN_EMAIL = get_secret("ADMIN_EMAIL")
+ADMIN_PW = get_secret("ADMIN_PW")
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
