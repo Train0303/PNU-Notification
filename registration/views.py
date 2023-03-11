@@ -61,6 +61,7 @@ class PasswordResetView(auth_views.PasswordResetView):
     + 찾고자 하는 이메일이 없다면, 메일 발송 하지 않음
     """
     success_url = reverse_lazy('registration:password_reset_done')
+    html_email_template_name = 'registration/password_reset_email.html'
 
     def post(self, request, *args, **kwargs):
         email = request.POST.get('email')
@@ -104,20 +105,14 @@ def send_verification_email(request):
     verification_url = reverse('registration:verification_result', args=[uid, token])
     verification_link = 'http://' + current_site.domain + verification_url
 
-    print(f'verification_link : {verification_link}')
-
-    message = f"""
-            이메일을 활성화하기 위해, 아래 링크를 눌러 이메일 인증을 완료해주세요.\n\n
-            {verification_link}\n\n
-            본인이 모르는 사실이라면, 이 메일을 무시하시면 됩니다.
-            """
-
     async_send_mail(
         subject='[PNU-Notification] Verify Your Email',
-        message=message,
+        html_template = 'registration/verification_email.html',
+        context={
+            'verification_link': verification_link,
+        },
         from_email=settings.DEFAULT_FROM_EMAIL,
         recipient_list=[user.email],
-        fail_silently= False
     )
 
 
