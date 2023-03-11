@@ -19,9 +19,15 @@
             <input type="text" class="form-control" name="notice_link" id="notice_link"
                    value="{{ subscribe.notice_link|default_if_none:"" }}">
         </div>
-            <button type="submit" class="btn btn-primary">수정하기</button>
-            <a href="{% url 'registration:index' %}" class="btn btn-danger">뒤로가기</a>
-            <button type="button" id = "delete-btn" class="btn btn-danger">삭제하기</button>
+        <div class="buttons">
+            <span>
+                <a href="{% url 'registration:index' %}" class="btn btn-success">뒤로가기</a>
+            </span>
+            <span>
+                <button type="button" id = "delete-btn" class="btn btn-danger">삭제하기</button>
+                <button type="submit" class="btn btn-primary">수정하기</button>
+            </span>
+        </div>
     </form>
 
     <form enctype = "multipart/form-data" method="post" action="{% url 'subscribe:delete-subscribe' subscribe.id %}">
