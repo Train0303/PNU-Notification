@@ -1,0 +1,32 @@
+<!-- 네비게이션바 -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <!-- PNU 배너를 누르면, '/'으로 이동합니다. -->
+        <a class="navbar-brand" href="/">PNU</a>
+        {% if user.is_authenticated %}
+            <button class="navbar-toggler" type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <div class="nav-link"> {{ user.email }} (접속중)</div>
+                    </li>
+                    <li class="nav-item">
+                        {% if user.is_active %}
+                            <a class="nav-link" href="{% url 'subscribe:create-subscribe' %}">등록</a>
+                        {% endif %}
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link logout" href="{% url 'registration:logout' %}">로그아웃</a>
+                    </li>
+                </ul>
+            </div>
+        {% endif %}
+    </div>
+</nav>

@@ -1,0 +1,11 @@
+<!-- 유효성 검사에서 실패한 에러들을 출력한다. -->
+<!-- 기존의 form의 경우는 FormView에서만 처리해 힘듦. -->
+{% if messages %}
+    <div class="mt-2">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}" role="alert">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+{% endif %}
