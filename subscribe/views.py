@@ -98,3 +98,17 @@ class UpdateSubscribeActiveView(WriterPermissionRequiredMixin, View):
                 'is_active': subscribe.is_active
             }
         })
+
+
+class DeleteSubscribeView(WriterPermissionRequiredMixin, View):
+    model = Subscribe
+    success_url: str = reverse_lazy('registration:index')
+    check_permission_path_variable = 'pk'
+
+    def get_object(self, pk):
+        return get_object_or_404(Subscribe, pk=pk)
+
+    def post(self, request, pk):
+        subscribe: Subscribe = self.get_object(pk)
+        subscribe.delete()
+        return redirect(self.success_url)
