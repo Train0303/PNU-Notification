@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 {% block content %}
 
 <div class="container my-3">
@@ -18,11 +19,29 @@
             <input type="text" class="form-control" name="notice_link" id="notice_link"
                    value="{{ subscribe.notice_link|default_if_none:"" }}">
         </div>
-        <button type="submit" class="btn btn-primary">수정하기</button>
-        <a href="{% url 'registration:index' %}">
-            <button type="button" class="btn btn-danger">뒤로가기</button>
-        </a>
+        <div class="buttons">
+            <span>
+                <a href="{% url 'registration:index' %}" class="btn btn-success">뒤로가기</a>
+            </span>
+            <span>
+                <button type="button" id = "delete-btn" class="btn btn-danger">삭제하기</button>
+                <button type="submit" class="btn btn-primary">수정하기</button>
+            </span>
+        </div>
     </form>
 
+    <form enctype = "multipart/form-data" method="post" action="{% url 'subscribe:delete-subscribe' subscribe.id %}">
+        {% csrf_token %}
+        {% include 'message_errors.html' %}
+        <div id="delete-confirm" style="display:none; margin-top: 20px;">
+            <p style="font-weight:bold; color: red;">[{{ subscribe.title }}]에 대한 구독을 삭제하시겠습니까?</p>
+            <button type="button" id="cancel-delete-btn" class="btn btn-primary">아니요</button>
+            <button type="submit" id="confirm-delete-btn" class="btn btn-danger">네</button>
+        </div>
+    </form>
 </div>
+{% endblock %}
+
+{% block javascript %}
+<script src="{% static 'subscribe/delete_subscribe.js' %}"></script>
 {% endblock %}

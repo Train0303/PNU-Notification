@@ -66,7 +66,7 @@ async def send_rss_to_user(notice: Notice):
         'author': x['author']}, res_items)
 
     valid_items = list(filter(lambda x: notice.is_valid(x['pubDate']), res_filter))
-    last_data_time = valid_items[0]["pubDate"] if valid_items else timezone.now()
+    last_data_time = valid_items[0]["pubDate"] if valid_items else -1
     valid_items.reverse()
 
     user_subscribes: List[Subscribe] = await get_user_subscribes(notice)
@@ -90,7 +90,8 @@ async def send_rss_to_user(notice: Notice):
     if failed_mail_users:
         await reject_subscribe_email(failed_mail_users)
 
-    await update_exec_time(notice, last_data_time)
+    if last_data_time != -1:
+        await update_exec_time(notice, last_data_time)
 
 class Command(BaseCommand):
     """
