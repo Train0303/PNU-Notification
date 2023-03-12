@@ -38,3 +38,7 @@ DATABASES = {
         }
     },
 }
+
+MIDDLEWARE += [
+    "pnuNoti.middleware.HealthCheckMiddleware",
+]
