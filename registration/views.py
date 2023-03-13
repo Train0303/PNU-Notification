@@ -11,10 +11,12 @@ from django.urls import reverse, reverse_lazy
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.views import View
+from django.views.generic import DeleteView
 
 from subscribe.models import Subscribe
 from .async_send_mail import async_send_mail
 from .forms import EmailAuthenticationForm, CustomUserCreationForm
+from .permission import UserPermissionRequiredMixin
 from .token import EmailVerificationTokenGenerator
 
 User = get_user_model()
@@ -92,6 +94,14 @@ class PasswordResetCompleteView(auth_views.PasswordResetCompleteView):
     비밀번호 초기화 - 비밀번호 변경 완료
     """
     template_name = 'registration/password_reset_complete.html'
+
+
+class AuthDeleteView(UserPermissionRequiredMixin, DeleteView):
+    model = User
+    pk_url_kwarg = 'pk'
+    template_name = 'registration/withdrawal.html'
+    success_url = reverse_lazy('registration:index')
+    check_permission_path_variable = 'pk'
 
 
 def send_verification_email(request):

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="container my-5">
+    <form method="post" action="{% url 'registration:withdrawal' user.id%}">
+        {% csrf_token %}
+        <h2>회원탈퇴</h2>
+        <p class="description">정말 서비스를 사용하지 않으실 건가요?</p>
+        <div class="btn-submit">
+            <a href="{% url 'registration:index' %}" class="btn btn-primary">뒤로가기</a>
+            <button type="submit" class="btn btn-danger">회원탈퇴</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
