@@ -25,6 +25,9 @@
                     <li class="nav-item">
                         <a class="nav-link logout" href="{% url 'registration:logout' %}">로그아웃</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link withdrawal" href="{% url 'registration:withdrawal' user.id %}">회원탈퇴</a>
+                    </li>
                 </ul>
             </div>
         {% endif %}
