@@ -88,6 +88,10 @@ label {
     position: absolute;
     right: 10%;
 }
+.withdrawal {
+    position: absolute;
+    right: 5%;
+}
 
 #subscribe-container {
     width: 500px;
