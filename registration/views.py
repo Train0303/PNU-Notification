@@ -135,7 +135,7 @@ def index(request):
     """
     user = request.user
     if not user.is_authenticated:
-        return render(request, 'registration/login.html')
+        return render(request, 'start.html')
 
     if not user.is_active:
         return render(request, 'registration/verification_need.html')
