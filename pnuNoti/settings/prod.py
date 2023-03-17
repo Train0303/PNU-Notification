@@ -49,10 +49,10 @@ def is_ec2_linux():
     """Detect if we are running on an EC2 Linux Instance
        See http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/identify_ec2_instances.html
     """
-    if os.path.isfile('/sys/hypervisor/uuid'):
-        with open('/sys/hypervisor/uuid') as f:
-            uuid = f.read()
-            return uuid.startswith('ec2')
+    if os.path.isfile('/sys/devices/virtual/dmi/id/sys_vendor'):
+        with open('/sys/devices/virtual/dmi/id/sys_vendor') as f:
+            vendor = f.read()
+            return vendor.startswith('Amazon EC2')
     return False
 
 def get_linux_ec2_private_ip():
