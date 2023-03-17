@@ -87,11 +87,12 @@ label {
 
 .logout {
     position: absolute;
-    right: 10%;
+    right: 200px;
 }
+
 .withdrawal {
     position: absolute;
-    right: 5%;
+    right: 100px;
 }
 
 #subscribe-container {
@@ -208,4 +209,16 @@ body {
 .btn-hover.color {
     background-image: linear-gradient(to right, #25aae1, #4481eb, #04befe, #3f86ed);
     box-shadow: 0 4px 15px 0 rgba(65, 132, 234, 0.75);
+}
+
+@media (max-width: 992px) {
+    .logout, .withdrawal {
+        position: initial;
+    }
+}
+
+@media (min-width: 992px) {
+    .navbar {
+        margin-bottom : 0;
+    }
 }
