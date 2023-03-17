@@ -6,6 +6,7 @@ services:
       dockerfile: Dockerfile
     container_name: server_django
     volumes:
+      - /sys/devices/virtual/dmi/id/sys_vendor:/sys/devices/virtual/dmi/id/sys_vendor:ro
       - ./:/app/
     tty: true
     environment:
