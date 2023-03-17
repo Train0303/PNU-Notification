@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% load static %}
 {% block content %}
-<div class="container my-5">
+<div class="container my-5" style="padding-bottom: 0px;">
     <form method="post" action="{% url 'registration:signup' %}">
         {% csrf_token %}
-        <h2>회원가입</h2>
-        <p class="description">부산대학교 공지사항을 가입한 메일로 받을 수 있습니다.</p>
+        <h2 style="text-align: center; padding-bottom: 20px;">회원가입</h2>
+        <p class="description">부산대학교 학과 공지사항을 가입한 메일로 받을 수 있습니다.</p>
         {% include "form_errors.html" %}
         <div class="mb-3">
             <label for="email" id="label-email"><span id="email-address">이메일</span><span id="email-duplication-check"></span></label>
@@ -27,6 +27,14 @@
         </div>
     </form>
 </div>
+<div class="description" style="margin-top: 100px; width: 100%; text-align: center">
+    <div>* 회원가입 시 설정하는 비밀번호는 현재 사용중인 이메일의 비밀번호와 같지 않아도 상관 없습니다.</div>
+    <div>* 저희 Database에 저장되는 사용자의 비밀번호는 모두 암호화되어 저장되기 때문에, 사용중인 이메일의 비밀번호를 사용해도 상관 없습니다.</div>
+    <div>* 예) 'pbkdf2_sha256$320000$j6DM7l8sR8mfVNNfsGqfxR$2yiggyyPVsO4WlxY1spVRtGLOVyf3iOKh5MERX0TRb4=' 처럼 저장됩니다.</div>
+    <div>* 사용자가 회원가입한 정보는, 회원 탈퇴시 즉시 삭제됩니다.</div>
+</div>
+
+
 {% endblock %}
 
 {% block javascript %}

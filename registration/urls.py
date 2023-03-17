@@ -1,9 +1,10 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
 
-from .views import SignUpView, LoginView, EmailVerificationResultView
-from .views import index, check_email_duplication, verification
-from .views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
+from .views import (SignUpView, LoginView, EmailVerificationResultView, AuthDeleteView,
+                    index, check_email_duplication, verification,
+                    PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView,
+                    )
 
 
 app_name = 'registration'
@@ -14,6 +15,7 @@ urlpatterns = [
     path('signup/verification/<str:uidb64>/<str:token>',EmailVerificationResultView.as_view(), name='verification_result'),
     path('login/', LoginView.as_view(), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    path('withdrawal/<int:pk>', AuthDeleteView.as_view(), name='withdrawal'),
     path('password_reset/', PasswordResetView.as_view(), name="password_reset"),
     path('password_reset_done/', PasswordResetDoneView.as_view(), name="password_reset_done"),
     path('password_reset_confirm/<uidb64>/<token>/', PasswordResetConfirmView.as_view(), name="password_reset_confirm"),
