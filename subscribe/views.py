@@ -50,6 +50,7 @@ class UpdateSubscribeView(WriterPermissionRequiredMixin, View):
         return get_object_or_404(Subscribe.objects.select_related("notice"), pk=pk)
 
     def get(self, request, pk):
+        1/0
         subscribe = self.get_object(pk)
 
         return render(request, self.template_name, {

@@ -1,12 +1,13 @@
 # django import
 from django.core.management.base import BaseCommand
-from django.core.mail import send_mail
+from django.core.mail import send_mail, get_connection
 from asgiref.sync import sync_to_async
 from django.conf import settings
 
 # model import
 from notice.models import Notice
 from subscribe.models import Subscribe
+
 
 # others import
 import asyncio
@@ -15,6 +16,16 @@ from requests import get, Response
 import xmltodict
 from datetime import datetime
 import time
+import traceback
+from smtplib import SMTPRecipientsRefused
+
+
+def custom_send_mail(send_mail_data):
+    try:
+        send_mail(**send_mail_data)
+        return 1
+    except SMTPRecipientsRefused as e:
+        return -1
 
 
 # @sync_to_async를 안해주면 장고는 비동기 db접속을 거부한다.
@@ -37,7 +48,7 @@ def update_exec_time(notice: Notice, last_data_time: datetime):
 
 
 async def send_mail_async(send_mail_data):
-    return send_mail(**send_mail_data)
+    custom_send_mail(**send_mail_data)
 
 
 def get_message(user_subscribe, valid_item):
@@ -53,7 +64,7 @@ def get_message(user_subscribe, valid_item):
 
 
 def send_failed_message_to_admin(failed_notices: List[Notice]):
-    send_data = f"발생 시각: {datetime.now()}\n"
+    send_data = f"발생 시각: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
     for notice in failed_notices:
         send_data += f"""'공지사항 ID': {notice.id}
 '공지사항 링크': {notice.rss_link}
@@ -61,11 +72,15 @@ def send_failed_message_to_admin(failed_notices: List[Notice]):
 
 """
 
-    send_mail(
-        subject='crontab_mail에서 에러가 발생했습니다.',
-        message=send_data,
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        recipient_list=[admin[1] for admin in settings.ADMIN_EMAIL])
+    send_mail_data = {
+        'subject': 'crontab_mail에서 에러가 발생했습니다.',
+        'message': send_data,
+        'from_email': settings.DEFAULT_FROM_EMAIL_ADMIN,
+        'connection': get_connection(backend=settings.EMAIL_BACKEND_ADMIN),
+        'recipient_list': [admin[1] for admin in settings.ADMINS],
+        'fail_silently': False
+    }
+    custom_send_mail(send_mail_data)
 
 
 async def send_rss_to_user(notice: Notice):
@@ -102,7 +117,7 @@ async def send_rss_to_user(notice: Notice):
                 }
                 tasks.append(send_mail_async(send_mail_data))
 
-            failed_mail_users.update([task for task in await asyncio.gather(*tasks) if task != 1])
+            failed_mail_users.update([task for task in await asyncio.gather(*tasks) if task == -1])
 
         if failed_mail_users:
             await reject_subscribe_email(failed_mail_users)
@@ -110,8 +125,10 @@ async def send_rss_to_user(notice: Notice):
         if last_data_time != -1:
             await update_exec_time(notice, last_data_time)
         return -1
+
     except Exception as e:
-        print(e)
+        print(notice.rss_link)
+        traceback.print_exc()
         return notice.id
 
 
@@ -123,24 +140,26 @@ class Command(BaseCommand):
     help = '공지사항 이메일 전송입니다.'
 
     def handle(self, *args: Any, **options: Any) -> NoReturn:
-        notices = Notice.objects.all()[:]
+        notices = list(Notice.objects.all().order_by('id'))
+
         start_time = time.time()
         loop = asyncio.get_event_loop()
         results = []
         tasks = list(map(lambda x: asyncio.ensure_future(send_rss_to_user(x)), notices))
         if tasks:
-            results = loop.run_until_complete(asyncio.wait(tasks))
+            results = loop.run_until_complete(asyncio.gather(*tasks))
 
-        failed_results = set(filter(
-            lambda x: x != -1,
-            results
-        ))
+        if not settings.DEBUG:
+            failed_results = set(list(filter(
+                lambda x: x != -1,
+                results
+            )))
 
-        if failed_results and not settings.DEBUG:
-            failed_notices = list(filter(
-                lambda x: x.id in failed_results,
-                notices
-            ))
-            send_failed_message_to_admin(failed_notices)
+            if failed_results:
+                failed_notices = list(filter(
+                    lambda x: x.id in failed_results,
+                    notices
+                ))
+                send_failed_message_to_admin(failed_notices)
 
         print("Total Execute Time = ", time.time() - start_time, "s")
