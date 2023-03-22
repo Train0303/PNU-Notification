@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+<div class="container my-3">
+    <form enctype = "multipart/form-data" method="post" action="{% url 'subscribe:update-hakjisi-subscribe' hakjisi_subscribe.id %}">
+        {% csrf_token %}
+        {% include 'message_errors.html' %}
+
+        <div class="mb-3">
+            <label for="등록">등록명</label>
+            {% if hakjisi_subscribe.notice_id == 1 %}
+                <input type="text" class="form-control" name="title" id="title" placeholder="학지시공지"
+                       value="{{ hakjisi_subscribe.title|default_if_none:"" }}" >
+            {% else %}
+                <input type="text" class="form-control" name="title" id="title" placeholder="대학공지"
+                       value="{{ hakjisi_subscribe.title|default_if_none:"" }}" >
+            {% endif %}
+        </div>
+        <div class="buttons">
+            <span>
+                <a href="{% url 'registration:index' %}" class="btn btn-success">뒤로가기</a>
+            </span>
+            <span>
+                <button type="submit" class="btn btn-primary">수정하기</button>
+            </span>
+        </div>
+    </form>
+</div>
+{% endblock %}

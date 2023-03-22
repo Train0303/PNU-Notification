@@ -13,7 +13,8 @@ from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.views import View
 from django.views.generic import DeleteView
 
-from subscribe.models import Subscribe
+from notice.models import HakjisiNotice
+from subscribe.models import Subscribe, HakjisiSubscribe
 from .async_send_mail import async_send_mail
 from .forms import EmailAuthenticationForm, CustomUserCreationForm
 from .permission import UserPermissionRequiredMixin
@@ -53,6 +54,17 @@ class EmailVerificationResultView(View):
         if user is not None and EmailVerificationTokenGenerator().check_token(user, token):
             user.is_active = True
             user.save()
+
+            hakjisi_notice = HakjisiNotice.objects.get(title="학지시공지")
+            univ_notice = HakjisiNotice.objects.get(title="대학공지")
+
+            # user가 active되는 순간에, 학생지원시스템의 공지사항을 default로 제공한다.
+            subscribe_hakjisi = HakjisiSubscribe(title='학지시공지', user=user, notice=hakjisi_notice, is_active=False)
+            subscribe_hakjisi.save()
+
+            subscribe_univ = HakjisiSubscribe(title='대학공지', user=user, notice=univ_notice, is_active=False)
+            subscribe_univ.save()
+
         return render(request, 'registration/verification_result.html', context={'user':user})
 
 
@@ -141,6 +153,7 @@ def index(request):
         return render(request, 'registration/verification_need.html')
 
     subscribes: List[Subscribe] = Subscribe.objects.select_related('notice').filter(user=user)
+    hakjisi_subscribes: List[HakjisiSubscribe] = HakjisiSubscribe.objects.select_related('notice').filter(user=user)
     context_data = {
         'subscribes': list(
             map(lambda subscribe: {
@@ -150,8 +163,17 @@ def index(request):
                 'last_updated': subscribe.notice.updated_at,
                 'is_active': subscribe.is_active
             }, subscribes)
+        ),
+        'hakjisi_subscribes': list(
+            map(lambda hakjisi_subscribe: {
+                'id': hakjisi_subscribe.id,
+                'title': hakjisi_subscribe.title,
+                'notice_link': hakjisi_subscribe.notice.notice_link,
+                'is_active': hakjisi_subscribe.is_active
+            }, hakjisi_subscribes)
         )
     }
+
     return render(request, 'registration/index.html', context=context_data)
 
 

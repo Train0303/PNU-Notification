@@ -87,3 +87,8 @@ class UpdateSubscribeForm(forms.Form):
                 raise forms.ValidationError('RSS와 같은 학과의 링크를 입력해주세요.')
 
         return self.cleaned_data.get('notice_link')
+
+
+class UpdateHakjisiSubscribeForm(forms.Form):
+    title = forms.CharField(label="등록 제목",
+                            error_messages={"invalid": '내용을 입력해주세요.'})
