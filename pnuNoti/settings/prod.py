@@ -1,5 +1,4 @@
 from .base import *
-
 import pymysql
 
 pymysql.install_as_MySQLdb()
@@ -9,11 +8,14 @@ ALLOWED_HOSTS = ['pnunoti.site', 'www.pnunoti.site']
 CSRF_TRUSTED_ORIGINS = ['https://pnunoti.site', 'https://www.pnunoti.site']
 DEBUG = False
 
+
+ADMIN_EMAIL = get_secret("ADMIN_EMAIL")
+ADMIN_PW = get_secret("ADMIN_PW")
+
 MYSQL_USER = get_secret("MYSQL_USER")
 MYSQL_PW = get_secret("MYSQL_PASSWORD")
 MYSQL_HOST = get_secret("MYSQL_HOST")
-ADMIN_EMAIL = get_secret("ADMIN_EMAIL")
-ADMIN_PW = get_secret("ADMIN_PW")
+
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.daum.net'
@@ -23,6 +25,16 @@ EMAIL_PORT = 465
 EMAIL_HOST_USER = get_secret("EMAIL_HOST")
 EMAIL_HOST_PASSWORD = get_secret("EMAIL_PASSWORD")
 DEFAULT_FROM_EMAIL = "부산대학교 공지사항 알리미"+f" <{EMAIL_HOST_USER}>"
+
+
+EMAIL_BACKEND_ADMIN = 'pnuNoti.backends.AdminEmailBackend'
+EMAIL_HOST_ADMIN = 'smtp.gmail.com'
+EMAIL_USE_TLS_ADMIN = True
+EMAIL_USE_SSL_ADMIN = False
+EMAIL_PORT_ADMIN = 587
+EMAIL_HOST_USER_ADMIN = get_secret("GMAIL_HOST")
+EMAIL_HOST_PASSWORD_ADMIN = get_secret("GMAIL_PASSWORD")
+DEFAULT_FROM_EMAIL_ADMIN = "부산대학교 공지사항 알리미"+f" <{EMAIL_HOST_USER_ADMIN}>"
 
 DATABASES = {
     'default': {

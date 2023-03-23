@@ -186,6 +186,7 @@ LOGGING = {
             'filters': ['require_debug_false'], # 배포 시에만 허용
             'class': 'django.utils.log.AdminEmailHandler',
             'include_html': True,
+            'email_backend': 'pnuNoti.backends.AdminEmailBackend',
         },
         # User Custom Start
         'file': {

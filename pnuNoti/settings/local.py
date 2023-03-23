@@ -15,6 +15,7 @@ EMAIL_HOST_USER = get_secret("GMAIL_HOST")
 EMAIL_HOST_PASSWORD = get_secret("GMAIL_PASSWORD")
 DEFAULT_FROM_EMAIL = "부산대학교 공지사항 알리미"+f" <{EMAIL_HOST_USER}>"
 
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
