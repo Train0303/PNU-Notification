@@ -8,13 +8,18 @@
         {% include 'message_errors.html' %}
 
         <div class="mb-3">
-            <label for="등록">등록명</label>
             {% if hakjisi_subscribe.notice_id == 1 %}
+                <a href="{{ notice_link }}" target="_blank">학생지원시스템 공지로 이동하기</a>
+                <hr>
+                <label for="title">등록명</label>
                 <input type="text" class="form-control" name="title" id="title" placeholder="학지시공지"
-                       value="{{ hakjisi_subscribe.title|default_if_none:"" }}" >
+                       value="{{ hakjisi_subscribe.title|default_if_none:'' }}" >
             {% else %}
+                <a href="{{ notice_link }}" target="_blank">대학공지로 이동하기</a>
+                <hr>
+                <label for="title">등록명</label>
                 <input type="text" class="form-control" name="title" id="title" placeholder="대학공지"
-                       value="{{ hakjisi_subscribe.title|default_if_none:"" }}" >
+                       value="{{ hakjisi_subscribe.title|default_if_none:'' }}" >
             {% endif %}
         </div>
         <div class="buttons">

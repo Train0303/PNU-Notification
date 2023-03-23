@@ -87,7 +87,8 @@ class UpdateHakjisiSubscribeView(HakjisiWriterPermissionRequiredMixin, View):
         hakjisi_subscribe = self.get_object(pk)
 
         return render(request, self.template_name, {
-            "hakjisi_subscribe": hakjisi_subscribe
+            "hakjisi_subscribe": hakjisi_subscribe,
+            'notice_link': hakjisi_subscribe.notice.notice_link,
         })
 
     def post(self, request, pk):

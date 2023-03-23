@@ -7,17 +7,22 @@
         {% csrf_token %}
         {% include 'message_errors.html' %}
 
+        <label>RSS 링크</label>
+        <p class="notice_text">{{ subscribe.notice.rss_link }}</p>
+        <label>최근 실행일</label>
+        <p class="notice_text">{{ subscribe.notice.updated_at }}</p>
+        <hr>
         <div class="mb-3">
-            <label for="등록">등록명 (필수)</label>
+            <label for="title">등록명 (필수)</label>
             <input type="text" class="form-control" name="title" id="title"
-                   value="{{ subscribe.title|default_if_none:"" }}">
+                   value="{{ subscribe.title|default_if_none:'' }}">
             <br>
             <input type="hidden" class="form-control" name="rss_link" id="rss_link"
                    value="{{ subscribe.notice.rss_link|default_if_none:'' }}">
 
-            <label for="Notice">공지사항 링크</label>
+            <label for="notice_link">공지사항 링크</label>
             <input type="text" class="form-control" name="notice_link" id="notice_link"
-                   value="{{ subscribe.notice_link|default_if_none:"" }}">
+                   value="{{ subscribe.notice_link|default_if_none:'' }}">
         </div>
         <div class="buttons">
             <span>

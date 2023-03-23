@@ -2,62 +2,47 @@
 {% load static %}
 {% block content %}
 {% if user.is_authenticated %}
-<table class="table">
-  <thead class="thead-light">
-    <tr>
-      <th scope="col" style="width: 20%">제목</th>
-      <th scope="col" style="width: 35%">공지사항 링크</th>
-      <th scope="col" style="width: 10%">구독 여부</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for hakjisi_subscribe in hakjisi_subscribes %}
+<div class="container my-5">
+  <table class="table">
+    <thead class="thead-light">
       <tr>
-        <th scope="row">
-          <a style="text-decoration: none" href={% url 'subscribe:update-hakjisi-subscribe' hakjisi_subscribe.id%}>
-              {{ hakjisi_subscribe.title }}
-          </a>
-        </th>
-        <td>{{ hakjisi_subscribe.notice_link }}</td>
-        {% if hakjisi_subscribe.is_active %}
-          <td><input data-value={{ hakjisi_subscribe.id }} class="toggle-event-hakjisi" type="checkbox" data-toggle="toggle" checked></td>
-        {% else %}
-          <td><input data-value={{ hakjisi_subscribe.id }} class="toggle-event-hakjisi" type="checkbox" data-toggle="toggle"></td>
-        {% endif %}
+        <th scope="col" style="width: 80%">제목</th>
+        <th scope="col" style="width: 20%">구독 여부</th>
       </tr>
-    {% endfor %}
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+      {% for hakjisi_subscribe in hakjisi_subscribes %}
+        <tr>
+          <th scope="row">
+            <a href="{% url 'subscribe:update-hakjisi-subscribe' hakjisi_subscribe.id %}" style='color:red;'>
+              {{ hakjisi_subscribe.title }}
+            </a>
+          </th>
+          {% if hakjisi_subscribe.is_active %}
+            <td><input data-value={{ hakjisi_subscribe.id }} class="toggle-event-hakjisi" type="checkbox" data-toggle="toggle" checked></td>
+          {% else %}
+            <td><input data-value={{ hakjisi_subscribe.id }} class="toggle-event-hakjisi" type="checkbox" data-toggle="toggle"></td>
+          {% endif %}
+        </tr>
+      {% endfor %}
 
-<table class="table" style="margin-top: 30px;">
-  <thead class="thead-light">
-    <tr>
-      <th scope="col", style="width: 20%">제목</th>
-      <th scope="col", style="width: 35%">RSS링크</th>
-      <th scope="col" style="width: 35%">업데이트 시간</th>
-      <th scope="col" style="width: 10%">구독 여부</th>
-    </tr>
-  </thead>
-  <tbody>
-  {% for subscribe in subscribes %}
-    <tr>
-      <th scope="row">
-        <a style="text-decoration: none" href={% url 'subscribe:update-subscribe' subscribe.id%}>
-            {{ subscribe.title }}
-        </a>
-      </th>
-      <td>{{ subscribe.RSS }}</td>
-      <td>{{ subscribe.last_updated }}</td>
-      {% if subscribe.is_active %}
-        <td><input data-value={{ subscribe.id }} class="toggle-event" type="checkbox" data-toggle="toggle" checked></td>
-      {% else %}
-        <td><input data-value={{ subscribe.id }} class="toggle-event" type="checkbox" data-toggle="toggle"></td>
-      {% endif %}
-    </tr>
-  {% endfor %}
-  </tbody>
-</table>
-
+      {% for subscribe in subscribes %}
+        <tr>
+          <th scope="row">
+            <a href="{% url 'subscribe:update-subscribe' subscribe.id %}">
+                {{ subscribe.title }}
+            </a>
+          </th>
+          {% if subscribe.is_active %}
+            <td><input data-value={{ subscribe.id }} class="toggle-event" type="checkbox" data-toggle="toggle" checked></td>
+          {% else %}
+            <td><input data-value={{ subscribe.id }} class="toggle-event" type="checkbox" data-toggle="toggle"></td>
+          {% endif %}
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 {% endif %}
 {% endblock %}
 
