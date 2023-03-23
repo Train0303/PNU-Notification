@@ -6,7 +6,7 @@ from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.contrib.sites.shortcuts import get_current_site
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse, reverse_lazy
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
@@ -32,6 +32,7 @@ class SignUpView(auth_views.FormView):
         user.email = form.cleaned_data.get('email')
         user.save()
         login(self.request, user)
+        send_verification_email(self.request)
         return super().form_valid(form)
 
 
@@ -179,8 +180,17 @@ def index(request):
 
 @login_required
 def verification(request):
-    send_verification_email(request)
-    return render(request, 'registration/verification.html')
+    if not request.user.is_active:
+        return render(request, 'registration/verification.html')
+    return redirect('registration:index')
+
+
+@login_required
+def verification_retry(request):
+    if request.method == 'POST':
+        send_verification_email(request)
+        return redirect('registration:verification')
+    return redirect('registration:index')
 
 
 def check_email_duplication(request):
