@@ -92,7 +92,7 @@ async def send_rss_to_user(notice: Notice):
     특정 학과의 공지사항을 받아와 마지막 갱신 시간보다 뒤에 등록된 글들을 구독한 회원들에게 메일전송
     """
     try:
-        response: Response = get(url=notice.rss_link, timeout=10)
+        response: Response = get(url=notice.rss_link, timeout=120)
         res_xml: dict = xmltodict.parse(response.text)
         res_items: List[dict] = res_xml['rss']['channel']['item']
         res_filter = map(lambda x: {
