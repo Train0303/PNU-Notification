@@ -145,13 +145,11 @@ img {
 footer {
     color: gray;
     justify-content: center;
-    margin-top: 50px;
     font-size: 15px;
     display: flex;
     border-top: 1px gray solid;
     padding-top: 20px;
     width: 100%;
-    position: absolute;
     bottom: 0;
 }
 

@@ -1,8 +1,8 @@
-{% include 'base.html' %}
+{% extends 'base.html' %}
 {% load static %}
 {% block content %}
 {% if user.is_authenticated %}
-<div class="container my-5">
+<div class="container" style="padding-bottom: 100px; margin-top: 50px!important;">
   <table class="table">
     <thead class="thead-light">
       <tr>

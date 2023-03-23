@@ -13,7 +13,7 @@
         <p class="notice_text">{{ subscribe.notice.updated_at }}</p>
         <hr>
         <div class="mb-3">
-            <label for="title">구독 제목 (필수)</label>
+            <label for="title">구독 제목  <span style="color:red"> (*필수)</span></label>
             <input type="text" class="form-control" name="title" id="title"
                    value="{{ subscribe.title|default_if_none:'' }}">
             <br>
@@ -37,7 +37,6 @@
 
     <form enctype = "multipart/form-data" method="post" action="{% url 'subscribe:delete-subscribe' subscribe.id %}">
         {% csrf_token %}
-        {% include 'message_errors.html' %}
         <div id="delete-confirm" style="display:none; margin-top: 20px;">
             <p style="font-weight:bold; color: red;">[{{ subscribe.title }}]에 대한 구독을 삭제하시겠습니까?</p>
             <button type="button" id="cancel-delete-btn" class="btn btn-primary">아니요</button>
