@@ -1,6 +1,7 @@
 from typing import *
 
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth import login, get_user_model
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
@@ -27,7 +28,17 @@ class SignUpView(auth_views.FormView):
     form_class = CustomUserCreationForm
     success_url = reverse_lazy('registration:verification') # 이메일 인증 template으로 이동
 
+    def get(self, request, *args, **kwargs): # 1차 경고 메시지
+        if User.objects.filter(is_active=True).count() > 500:
+            messages.warning(request, "죄송합니다. 현재 사용자가 가득 차서 회원가입이 불가능합니다.")
+
+        return super().get(self, request, *args, **kwargs)
+
     def form_valid(self, form):
+        if User.objects.filter(is_active=True).count() > 500: # 실제 회원가입 차단
+            messages.warning(self.request, "죄송합니다. 현재 사용자가 가득 차서 회원가입이 불가능합니다.")
+            return super().form_invalid(form)
+
         user = form.save(commit=False)
         user.email = form.cleaned_data.get('email')
         user.save()

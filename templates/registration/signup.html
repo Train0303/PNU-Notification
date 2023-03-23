@@ -25,6 +25,7 @@
         <button type="button" class="btn btn-success" id="btn-signup-description">★회원가입 전에 읽어보세요★</button>
 
         {% include "form_errors.html" %}
+        {% include "message_errors.html" %}
         <div class="mb-3">
             <label for="email" id="label-email"><span id="email-address">이메일</span><span id="email-duplication-check"></span></label>
             <input type="text" class="form-control" name="email" id="email" placeholder="예) pnu@naver.com"

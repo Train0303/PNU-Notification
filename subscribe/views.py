@@ -24,6 +24,10 @@ class CreateSubscribeView(LoginRequiredMixin, FormView):
 
     @transaction.atomic()
     def form_valid(self, form):
+        if Subscribe.objects.filter(user_id = self.request.user.id).count() == 10:
+            messages.warning(self.request, "RSS 구독은 최대 10개까지 가능합니다.")
+            return render(self.request, self.template_name, {'form': form})
+
         notice, created = Notice.objects.get_or_create(rss_link=form.cleaned_data.get("rss_link"))
 
         if Subscribe.objects.filter(notice=notice, user=self.request.user).exists():
