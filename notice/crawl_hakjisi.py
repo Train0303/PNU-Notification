@@ -13,7 +13,6 @@ def get_hakjisi_notice(current_id: int) -> (int, list):
     res_items = set()
 
     for i in range(1, 11): # len(list) == 10
-        print(i)
         href: str = soup.select_one(f'#board-tabpanel-1 > ul > li:nth-child({i})').find('a').get('href')
 
         # href == "javascript:openBbsDetailPop('000000000000386','1303', '126895bc-ae23-5617-29e2-2928567a7bc3')"
@@ -47,7 +46,6 @@ def get_univ_notice(current_id: int) -> (int, list):
     res_items = list()
 
     for i in range(1, 21): # len(list) == 20
-        print(i)
         href: str = soup.select_one(f'#board-wrap > div.board-list-wrap > table > tbody > tr:nth-child({i}) > td.subject > p').find('a').get('href')
         notice_id = int(href.split('=')[-1])
 
