@@ -4,12 +4,12 @@ import pymysql
 pymysql.install_as_MySQLdb()
 
 # 설정한 도메인만 가능하도록 변경
-ALLOWED_HOSTS = ['pnunoti.site', 'www.pnunoti.site', '*']
+ALLOWED_HOSTS = ['pnunoti.site', 'www.pnunoti.site']
 CSRF_TRUSTED_ORIGINS = ['https://pnunoti.site', 'https://www.pnunoti.site']
 DEBUG = False
 
 
-ADMIN_EMAIL = get_secret("ADMIN_ID")
+ADMIN_EMAIL = get_secret("ADMIN_EMAIL")
 ADMIN_PW = get_secret("ADMIN_PW")
 
 MYSQL_USER = get_secret("MYSQL_USER")
@@ -23,7 +23,7 @@ EMAIL_USE_TLS = False
 EMAIL_USE_SSL = True
 EMAIL_PORT = 465
 EMAIL_HOST_USER = get_secret("EMAIL_HOST")
-EMAIL_HOST_PASSWORD = get_secret("EMAIL_PASSWORD")[0]
+EMAIL_HOST_PASSWORD = get_secret("EMAIL_PASSWORD")
 DEFAULT_FROM_EMAIL = "부산대학교 공지사항 알리미"+f" <{EMAIL_HOST_USER}>"
 
 
