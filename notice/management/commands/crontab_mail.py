@@ -37,6 +37,7 @@ def custom_send_mail(send_mail_data):
 
     return 1
 
+
 # @sync_to_async를 안해주면 장고는 비동기 db접속을 거부한다.
 @sync_to_async
 def get_user_subscribes(notice: Notice):
@@ -93,6 +94,16 @@ def send_failed_message_to_admin(failed_notices: List[Notice]):
     custom_send_mail(send_mail_data)
 
 
+def remove_duplication(res_items):
+    duplications_set = set()
+    result = []
+    for res_item in res_items:
+        if res_item['title'] not in duplications_set:
+            duplications_set.add(res_item['title'])
+            result.append(res_item)
+    return result
+
+
 async def send_rss_to_user(notice: Notice):
     """
     특정 학과의 공지사항을 받아와 마지막 갱신 시간보다 뒤에 등록된 글들을 구독한 회원들에게 메일전송
@@ -101,6 +112,7 @@ async def send_rss_to_user(notice: Notice):
         response: Response = get(url=notice.rss_link, timeout=120)
         res_xml: dict = xmltodict.parse(response.text)
         res_items: List[dict] = res_xml['rss']['channel']['item']
+        res_items = remove_duplication(res_items)
         res_filter = map(lambda x: {
             'notice_title': x['title'],
             'link': x['link'],
@@ -125,6 +137,7 @@ async def send_rss_to_user(notice: Notice):
                     'fail_silently': False
                 }
                 tasks.append(send_mail_async(send_mail_data))
+
             failed_user_set.update([user_subscribes[i].user.id for i, task in
                                     enumerate(await asyncio.gather(*tasks)) if task == -1])
 
@@ -162,14 +175,12 @@ class Command(BaseCommand):
             # 지정한 예외를 제외한 전송 실패가 발생 경우 운영자에게 메일을 보냄
             failed_results = set(list(filter(
                 lambda x: x != -1,
-                results
-            )))
+                results)))
 
             if failed_results:
                 failed_notices = list(filter(
                     lambda x: x.id in failed_results,
-                    notices
-                ))
+                    notices))
                 send_failed_message_to_admin(failed_notices)
 
         print("Total Execute Time = ", time.time() - start_time, "s")
