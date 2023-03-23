@@ -13,7 +13,7 @@
         <p class="notice_text">{{ subscribe.notice.updated_at }}</p>
         <hr>
         <div class="mb-3">
-            <label for="title">등록명 (필수)</label>
+            <label for="title">구독 제목 (필수)</label>
             <input type="text" class="form-control" name="title" id="title"
                    value="{{ subscribe.title|default_if_none:'' }}">
             <br>

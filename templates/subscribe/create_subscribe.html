@@ -7,15 +7,15 @@
         {% include "message_errors.html" %}
 
         <div class="mb-3">
-            <label for="등록">등록명 (필수)</label>
+            <label for="title">구독 제목 (*필수)</label>
             <input type="text" class="form-control" name="title" id="title" placeholder="예) '컴공 공지'라고 입력 시, 이메일 제목에 '컴공 공지: ' 추가"
                    value="{{ form.title.value|default_if_none:'' }}">
             <br>
-            <label for="Notice">공지사항 링크</label>
+            <label for="notice_link">공지사항 링크</label>
             <input type="text" class="form-control" name="notice_link" id="notice_link" placeholder="예) https://cse.pusan.ac.kr/cse/14651/subview.do"
                    value="{{ form.notice_link.value|default_if_none:'' }}">
             <br>
-            <label for="RSS">RSS링크 (필수)</label>
+            <label for="rss_link">RSS링크 (*필수)</label>
             <input type="text" class="form-control" name="rss_link" id="rss_link" placeholder="예) https://cse.pusan.ac.kr/bbs/cse/2605/rssList.do?row=50"
                    value="{{ form.rss_link.value|default_if_none:'' }}">
         </div>

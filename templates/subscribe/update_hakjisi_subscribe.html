@@ -11,13 +11,13 @@
             {% if hakjisi_subscribe.notice_id == 1 %}
                 <a href="{{ notice_link }}" target="_blank">학생지원시스템 공지로 이동하기</a>
                 <hr>
-                <label for="title">등록명</label>
+                <label for="title">구독 제목</label>
                 <input type="text" class="form-control" name="title" id="title" placeholder="학지시공지"
                        value="{{ hakjisi_subscribe.title|default_if_none:'' }}" >
             {% else %}
                 <a href="{{ notice_link }}" target="_blank">대학공지로 이동하기</a>
                 <hr>
-                <label for="title">등록명</label>
+                <label for="title">구독 제목</label>
                 <input type="text" class="form-control" name="title" id="title" placeholder="대학공지"
                        value="{{ hakjisi_subscribe.title|default_if_none:'' }}" >
             {% endif %}
