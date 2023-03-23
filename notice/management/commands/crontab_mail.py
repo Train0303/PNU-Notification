@@ -3,7 +3,6 @@ from django.core.management.base import BaseCommand
 from django.core.mail import send_mail, get_connection
 from asgiref.sync import sync_to_async
 from django.conf import settings
-from django.db.models import Count, QuerySet
 
 # model import
 from notice.models import Notice
@@ -17,19 +16,26 @@ import xmltodict
 from datetime import datetime
 import time
 import traceback
-from smtplib import SMTPRecipientsRefused
-from collections import Counter
-
-failed_mail_users = []
+from smtplib import SMTPResponseException
+from notice.management.utils import mail_error_code
 
 
 def custom_send_mail(send_mail_data):
     try:
         send_mail(**send_mail_data)
-        return 1
-    except SMTPRecipientsRefused as e:
-        return -1
+    except SMTPResponseException as e:
+        code = e.smtp_code
+        msg = e.smtp_error
+        mail_error_data = mail_error_code.get(code, None)
+        if mail_error_data != -1:
+            for data in mail_error_data:
+                if code == 450 and msg.find(data) != -1:
+                    raise Exception("하루 메일 발송 제한을 초과했습니다.")
+                elif msg.find(data):
+                    return -1
+        print(e)
 
+    return 1
 
 # @sync_to_async를 안해주면 장고는 비동기 db접속을 거부한다.
 @sync_to_async
@@ -45,9 +51,9 @@ def update_exec_time(notice: Notice, last_data_time: datetime):
     notice.save()
 
 
+@sync_to_async
 def reject_subscribe_user(failed_users: List[int]):
-    if failed_users:
-        Subscribe.objects.filter(user_id__in=failed_users).update(is_active=False)
+    Subscribe.objects.filter(user_id__in=failed_users).update(is_active=False)
 
 
 async def send_mail_async(send_mail_data):
@@ -123,7 +129,7 @@ async def send_rss_to_user(notice: Notice):
                                     enumerate(await asyncio.gather(*tasks)) if task == -1])
 
         if failed_user_set:
-            failed_mail_users.extend(list(failed_user_set))
+            await reject_subscribe_user(list(failed_user_set))
 
         if last_data_time != -1:
             await update_exec_time(notice, last_data_time)
@@ -153,29 +159,7 @@ class Command(BaseCommand):
             results = loop.run_until_complete(asyncio.gather(*tasks))
 
         if not settings.DEBUG:
-            # 전송 실패한 사용자가 있는 지 확인
-            if failed_mail_users:
-                # 사용자가 수신 거부를 해 모든 메일이 거부된 경우만 자동 알림 비활성화를 해주는 로직
-                failed_mail_users_count = Counter(failed_mail_users)
-                failed_mail_users_subscribe_count: QuerySet = Subscribe.objects.values(
-                    'user_id'
-                ).filter(
-                    user__in=list(failed_mail_users_count.keys())
-                ).annotate(
-                    subscribe_count=Count('user_id')
-                )
-
-                # values() 메소드는 모델 object가 아닌 dict으로 반환하기에 x['user_id']와 같이 dict으로 접근해야함
-                reject_mail_users = list(
-                    map(
-                        lambda x: x['user_id'],
-                        filter(
-                            lambda x: failed_mail_users_count[x['user_id']] == x['subscribe_count'],
-                            list(failed_mail_users_subscribe_count))
-                    ))
-                reject_subscribe_user(reject_mail_users)
-
-            # SMTPRecipientsRefused 예외를 제외한 전송 실패가 발생 경우 운영자에게 메일을 보냄
+            # 지정한 예외를 제외한 전송 실패가 발생 경우 운영자에게 메일을 보냄
             failed_results = set(list(filter(
                 lambda x: x != -1,
                 results
