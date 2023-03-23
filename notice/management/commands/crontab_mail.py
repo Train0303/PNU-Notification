@@ -3,11 +3,11 @@ from django.core.management.base import BaseCommand
 from django.core.mail import send_mail, get_connection
 from asgiref.sync import sync_to_async
 from django.conf import settings
+from django.db.models import Count, QuerySet
 
 # model import
 from notice.models import Notice
 from subscribe.models import Subscribe
-
 
 # others import
 import asyncio
@@ -18,6 +18,9 @@ from datetime import datetime
 import time
 import traceback
 from smtplib import SMTPRecipientsRefused
+from collections import Counter
+
+failed_mail_users = []
 
 
 def custom_send_mail(send_mail_data):
@@ -37,18 +40,19 @@ def get_user_subscribes(notice: Notice):
 
 
 @sync_to_async
-def reject_subscribe_email(failed_user: Set[str]):
-    Subscribe.objects.filter(user__email__in=list(failed_user)).update(is_active=False)
-
-
-@sync_to_async
 def update_exec_time(notice: Notice, last_data_time: datetime):
     notice.updated_at = last_data_time
     notice.save()
 
 
+def reject_subscribe_user(failed_users: List[int]):
+    if failed_users:
+        Subscribe.objects.filter(user_id__in=failed_users).update(is_active=False)
+
+
 async def send_mail_async(send_mail_data):
-    custom_send_mail(**send_mail_data)
+    result = custom_send_mail(send_mail_data)
+    return result
 
 
 def get_message(user_subscribe, valid_item):
@@ -88,7 +92,7 @@ async def send_rss_to_user(notice: Notice):
     특정 학과의 공지사항을 받아와 마지막 갱신 시간보다 뒤에 등록된 글들을 구독한 회원들에게 메일전송
     """
     try:
-        response: Response = get(url=notice.rss_link, timeout=5)
+        response: Response = get(url=notice.rss_link, timeout=10)
         res_xml: dict = xmltodict.parse(response.text)
         res_items: List[dict] = res_xml['rss']['channel']['item']
         res_filter = map(lambda x: {
@@ -102,8 +106,7 @@ async def send_rss_to_user(notice: Notice):
         valid_items.reverse()
 
         user_subscribes: List[Subscribe] = await get_user_subscribes(notice)
-
-        failed_mail_users = set()
+        failed_user_set = set()
         for valid_item in valid_items:
             valid_item['pubDate'] = valid_item['pubDate'].strftime("%Y-%m-%d %H:%M")
             tasks = []
@@ -116,11 +119,11 @@ async def send_rss_to_user(notice: Notice):
                     'fail_silently': False
                 }
                 tasks.append(send_mail_async(send_mail_data))
+            failed_user_set.update([user_subscribes[i].user.id for i, task in
+                                    enumerate(await asyncio.gather(*tasks)) if task == -1])
 
-            failed_mail_users.update([task for task in await asyncio.gather(*tasks) if task == -1])
-
-        if failed_mail_users:
-            await reject_subscribe_email(failed_mail_users)
+        if failed_user_set:
+            failed_mail_users.extend(list(failed_user_set))
 
         if last_data_time != -1:
             await update_exec_time(notice, last_data_time)
@@ -150,6 +153,29 @@ class Command(BaseCommand):
             results = loop.run_until_complete(asyncio.gather(*tasks))
 
         if not settings.DEBUG:
+            # 전송 실패한 사용자가 있는 지 확인
+            if failed_mail_users:
+                # 사용자가 수신 거부를 해 모든 메일이 거부된 경우만 자동 알림 비활성화를 해주는 로직
+                failed_mail_users_count = Counter(failed_mail_users)
+                failed_mail_users_subscribe_count: QuerySet = Subscribe.objects.values(
+                    'user_id'
+                ).filter(
+                    user__in=list(failed_mail_users_count.keys())
+                ).annotate(
+                    subscribe_count=Count('user_id')
+                )
+
+                # values() 메소드는 모델 object가 아닌 dict으로 반환하기에 x['user_id']와 같이 dict으로 접근해야함
+                reject_mail_users = list(
+                    map(
+                        lambda x: x['user_id'],
+                        filter(
+                            lambda x: failed_mail_users_count[x['user_id']] == x['subscribe_count'],
+                            list(failed_mail_users_subscribe_count))
+                    ))
+                reject_subscribe_user(reject_mail_users)
+
+            # SMTPRecipientsRefused 예외를 제외한 전송 실패가 발생 경우 운영자에게 메일을 보냄
             failed_results = set(list(filter(
                 lambda x: x != -1,
                 results

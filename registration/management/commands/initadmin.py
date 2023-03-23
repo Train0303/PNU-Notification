@@ -10,7 +10,7 @@ User: CustomUser = get_user_model()
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
-        user = User.objects.filter(email__iexact=settings.ADMIN_ID)
+        user = User.objects.filter(email__iexact=settings.ADMIN_EMAIL)
         if len(user) == 0:
             email = settings.ADMIN_EMAIL
             password = settings.ADMIN_PW
