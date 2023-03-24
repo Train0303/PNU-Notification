@@ -19,7 +19,8 @@
                     </li>
                     <li class="nav-item">
                         {% if user.is_active %}
-                            <a class="nav-link" href="{% url 'subscribe:create-subscribe' %}">등록</a>
+                            <a class="nav-link" href="{% url 'subscribe:create-subscribe' %}"
+                               style="color:black; font-weight: bold;">구독 추가</a>
                         {% endif %}
                     </li>
                     <li class="nav-item">

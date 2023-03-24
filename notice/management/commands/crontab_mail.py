@@ -66,12 +66,10 @@ def get_message(user_subscribe, valid_item):
     if user_subscribe.notice_link:
         return f"""게시글 링크: {valid_item.get('link')}
 공지사항 링크: {user_subscribe.notice_link}
-작성시간: {valid_item.get('pubDate')}
-작성자: {valid_item.get('author')}"""
+작성시간: {valid_item.get('pubDate')}"""
 
     return f"""게시글 링크: {valid_item.get('link')}
-작성시간: {valid_item.get('pubDate')}
-작성자: {valid_item.get('author')}"""
+작성시간: {valid_item.get('pubDate')}"""
 
 
 def send_failed_message_to_admin(failed_notices: List[Notice]):

@@ -1,7 +1,7 @@
+from datetime import datetime
+
 from django.db import models
 from django.utils import timezone
-
-from datetime import datetime, timedelta
 
 
 # Create your models here.
@@ -20,3 +20,12 @@ class Notice(models.Model):
 
     def __str__(self):
         return f"{self.rss_link}"
+
+
+class HakjisiNotice(models.Model):
+    notice_link = models.URLField(verbose_name="공지사항 링크", null=False, unique=True)
+    title = models.CharField(verbose_name="공지사항 이름", max_length=128, null=False)
+    last_notice_id = models.IntegerField(verbose_name="마지막 공지 id", null=False, default=0)
+
+    class Meta:
+        db_table = "notice_hakjisi"

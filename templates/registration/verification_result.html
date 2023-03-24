@@ -5,9 +5,10 @@
       {% if user.is_active %}
         <p>이메일 인증이 완료되었습니다.</p>
         <p>이제부터 서비스를 이용할 수 있습니다.</p>
-        <p>'등록' 버튼을 눌러 서비스를 시작하세요.</p>
+        <a href="{% url 'registration:index' %}" class="btn btn-primary">메인으로 이동</a>
       {% else %}
         <p>ㅠㅠ이메일 인증에 실패하셨습니다ㅠㅠ</p>
+        <p>다시 시도해주시기 바랍니다.</p>
       {% endif %}
   {% endif %}
 </div>
