@@ -11,9 +11,10 @@ from django.core.management.base import BaseCommand
 
 from notice.crawl_hakjisi import get_hakjisi_notice, get_univ_notice
 from notice.models import HakjisiNotice
+from notice.management.commands.crontab_mail import custom_send_mail, send_mail_async, remove_duplication
+
 from subscribe.models import HakjisiSubscribe
 
-from crontab_mail import custom_send_mail, send_mail_async, remove_duplication
 
 
 @sync_to_async
