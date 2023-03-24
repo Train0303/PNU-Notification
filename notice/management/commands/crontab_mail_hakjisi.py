@@ -104,6 +104,8 @@ async def send_hakjisi_to_user(notice: HakjisiNotice):
         traceback.print_exc()
         return notice.id
 
+    return -1
+
 
 class Command(BaseCommand):
     """
