@@ -29,7 +29,7 @@ def get_hakjisi_notice(current_id: int) -> (int, list):
 
     res_items = sorted(list(res_items), key=lambda x: x[1]) # id가 작은 것부터 오름차순 정렬
 
-    contexts = [{'notice_title': notice_title, 'notice_link': notice_link} for notice_title, notice_link in res_items]
+    contexts = [{'title': notice_title, 'notice_link': notice_link} for notice_title, notice_link in res_items]
 
     return max_id, contexts
 
@@ -57,6 +57,6 @@ def get_univ_notice(current_id: int) -> (int, list):
 
     res_items = sorted(res_items, key=lambda x: x[1]) # id가 작은 것부터 오름차순 정렬
 
-    contexts = [{'notice_title': notice_title, 'notice_link': notice_link} for notice_title, notice_link in res_items]
+    contexts = [{'title': notice_title, 'notice_link': notice_link} for notice_title, notice_link in res_items]
 
     return max_id, contexts

@@ -85,7 +85,7 @@ async def send_hakjisi_to_user(notice: HakjisiNotice):
             tasks = []
             for s in user_subscribes:
                 send_mail_data = {
-                    'subject': f"{s.title}: {context.get('notice_title')}",
+                    'subject': f"{s.title}: {context.get('title')}",
                     'message': get_message(s, context),
                     'from_email': settings.DEFAULT_FROM_EMAIL,
                     'recipient_list': [s.user.email],
