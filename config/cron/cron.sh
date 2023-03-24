@@ -37,4 +37,5 @@ export DJANGO_SETTINGS_MODULE=pnuNoti.settings.prod
 
 echo "$(date): starting cron"
 python /app/manage.py crontab_mail >> $log_file 2>&1
+python /app/manage.py crontab_mail_hakjisi >> $log_file 2>&1
 echo "$(date): cron ended, exit code is $?"
