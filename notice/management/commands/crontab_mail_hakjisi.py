@@ -91,6 +91,7 @@ async def send_hakjisi_to_user(notice: HakjisiNotice):
                     'html_message':
                         f"게시글 링크:<br><a href='{notice_link}'>{notice_link}</a><br><br>" + \
                         f"공지사항 링크:<br><a href='{notice.notice_link}'>{notice.notice_link}</a>"
+
                 }
                 tasks.append(send_mail_async(send_mail_data))
 
