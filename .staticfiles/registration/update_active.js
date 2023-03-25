@@ -20,8 +20,33 @@ $('.toggle-event').change(function(){
     .catch((error) => {
         console.log("error: ", error);
     })
-
 });
+
+$('.toggle-event-hakjisi').change(function(){
+    const csrftoken = getCookie('csrftoken');
+    let id = $(this).data('value');
+    let check = $(this).prop('checked');
+    const data = {
+        state: check
+    }
+    fetch(`/subscribe/update/active/hakjisi/${id}`,{
+        method: "POST",
+        headers: {
+            'X-CSRFToken': csrftoken,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    })
+    .then((response) => response.json())
+    .then((result) => {
+        console.log("success: ", result);
+    })
+    .catch((error) => {
+        console.log("error: ", error);
+    })
+});
+
+
 
 function getCookie(name) {
     let cookieValue = null;

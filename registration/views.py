@@ -1,19 +1,21 @@
 from typing import *
 
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth import login, get_user_model
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.contrib.sites.shortcuts import get_current_site
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse, reverse_lazy
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.views import View
 from django.views.generic import DeleteView
 
-from subscribe.models import Subscribe
+from notice.models import HakjisiNotice
+from subscribe.models import Subscribe, HakjisiSubscribe
 from .async_send_mail import async_send_mail
 from .forms import EmailAuthenticationForm, CustomUserCreationForm
 from .permission import UserPermissionRequiredMixin
@@ -26,11 +28,22 @@ class SignUpView(auth_views.FormView):
     form_class = CustomUserCreationForm
     success_url = reverse_lazy('registration:verification') # 이메일 인증 template으로 이동
 
+    def get(self, request, *args, **kwargs): # 1차 경고 메시지
+        if User.objects.filter(is_active=True).count() > 500:
+            messages.warning(request, "죄송합니다. 현재 사용자가 가득 차서 회원가입이 불가능합니다.")
+
+        return super().get(self, request, *args, **kwargs)
+
     def form_valid(self, form):
+        if User.objects.filter(is_active=True).count() > 500: # 실제 회원가입 차단
+            messages.warning(self.request, "죄송합니다. 현재 사용자가 가득 차서 회원가입이 불가능합니다.")
+            return super().form_invalid(form)
+
         user = form.save(commit=False)
         user.email = form.cleaned_data.get('email')
         user.save()
         login(self.request, user)
+        send_verification_email(self.request)
         return super().form_valid(form)
 
 
@@ -53,6 +66,17 @@ class EmailVerificationResultView(View):
         if user is not None and EmailVerificationTokenGenerator().check_token(user, token):
             user.is_active = True
             user.save()
+
+            hakjisi_notice = HakjisiNotice.objects.get(title="학지시공지")
+            univ_notice = HakjisiNotice.objects.get(title="대학공지")
+
+            # user가 active되는 순간에, 학생지원시스템의 공지사항을 default로 제공한다.
+            subscribe_hakjisi = HakjisiSubscribe(title='학지시공지', user=user, notice=hakjisi_notice, is_active=False)
+            subscribe_hakjisi.save()
+
+            subscribe_univ = HakjisiSubscribe(title='대학공지', user=user, notice=univ_notice, is_active=False)
+            subscribe_univ.save()
+
         return render(request, 'registration/verification_result.html', context={'user':user})
 
 
@@ -141,6 +165,7 @@ def index(request):
         return render(request, 'registration/verification_need.html')
 
     subscribes: List[Subscribe] = Subscribe.objects.select_related('notice').filter(user=user)
+    hakjisi_subscribes: List[HakjisiSubscribe] = HakjisiSubscribe.objects.select_related('notice').filter(user=user)
     context_data = {
         'subscribes': list(
             map(lambda subscribe: {
@@ -150,15 +175,33 @@ def index(request):
                 'last_updated': subscribe.notice.updated_at,
                 'is_active': subscribe.is_active
             }, subscribes)
+        ),
+        'hakjisi_subscribes': list(
+            map(lambda hakjisi_subscribe: {
+                'id': hakjisi_subscribe.id,
+                'title': hakjisi_subscribe.title,
+                'notice_link': hakjisi_subscribe.notice.notice_link,
+                'is_active': hakjisi_subscribe.is_active
+            }, hakjisi_subscribes)
         )
     }
+
     return render(request, 'registration/index.html', context=context_data)
 
 
 @login_required
 def verification(request):
-    send_verification_email(request)
-    return render(request, 'registration/verification.html')
+    if not request.user.is_active:
+        return render(request, 'registration/verification.html')
+    return redirect('registration:index')
+
+
+@login_required
+def verification_retry(request):
+    if request.method == 'POST':
+        send_verification_email(request)
+        return redirect('registration:verification')
+    return redirect('registration:index')
 
 
 def check_email_duplication(request):

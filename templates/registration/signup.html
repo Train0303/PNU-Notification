@@ -1,12 +1,31 @@
 {% extends "base.html" %}
 {% load static %}
 {% block content %}
-<div class="container my-5" style="padding-bottom: 0px;">
-    <form method="post" action="{% url 'registration:signup' %}">
+<style>
+</style>
+<div class="container my-5">
+    <div id="description">
+        <ul>
+            <li><strong>카카오계정</strong>으로 회원가입을 권장합니다.</li>
+            <li><strong>카카오계정</strong>으로 회원가입을 진행하시면,<br>
+                메일을 카카오톡으로 받아보실 수 있습니다.</li>
+            <li>회원가입 시 설정하는 비밀번호는<br>
+                실제 사용중인 이메일의 비밀번호와 같지 않아도 상관 없습니다.</li>
+            <li>Database에 저장되는 사용자의 비밀번호는<br>
+                모두 <strong>암호화되어</strong> 저장되기 때문에,<br>
+                (예시) 'pbkdf2_sha256$320000$j...'<br>
+                실제 사용중인 이메일의 비밀번호를 사용해도 상관 없습니다.</li>
+            <li>사용자가 회원가입한 정보는, 회원 탈퇴시<br> 즉시 삭제됩니다.</li>
+        </ul>
+        <button type="button" class="btn btn-primary" id="btn-resignup" style="width:100%;">다시 가입하러 갈래요</button>
+    </div>
+    <form method="post" action="{% url 'registration:signup' %}" id="form-signup">
         {% csrf_token %}
-        <h2 style="text-align: center; padding-bottom: 20px;">회원가입</h2>
-        <p class="description">부산대학교 학과 공지사항을 가입한 메일로 받을 수 있습니다.</p>
+        <h2 style="text-align: center; padding-bottom: 20px; font-weight: bold;">회원가입</h2>
+        <button type="button" class="btn btn-success" id="btn-signup-description">★회원가입 전에 읽어보세요★</button>
+
         {% include "form_errors.html" %}
+        {% include "message_errors.html" %}
         <div class="mb-3">
             <label for="email" id="label-email"><span id="email-address">이메일</span><span id="email-duplication-check"></span></label>
             <input type="text" class="form-control" name="email" id="email" placeholder="예) pnu@naver.com"
@@ -23,20 +42,14 @@
                    value="{{ form.password2.value|default_if_none:'' }}">
         </div>
         <div class="btn-submit">
-            <button type="submit" class="btn btn-primary">생성하기</button>
+            <button type="submit" class="btn btn-primary">회원가입</button>
         </div>
     </form>
-</div>
-<div class="description" style="margin-top: 100px; width: 100%; text-align: center">
-    <div>* 회원가입 시 설정하는 비밀번호는 현재 사용중인 이메일의 비밀번호와 같지 않아도 상관 없습니다.</div>
-    <div>* 저희 Database에 저장되는 사용자의 비밀번호는 모두 암호화되어 저장되기 때문에, 사용중인 이메일의 비밀번호를 사용해도 상관 없습니다.</div>
-    <div>* 예) 'pbkdf2_sha256$320000$j6DM7l8sR8mfVNNfsGqfxR$2yiggyyPVsO4WlxY1spVRtGLOVyf3iOKh5MERX0TRb4=' 처럼 저장됩니다.</div>
-    <div>* 사용자가 회원가입한 정보는, 회원 탈퇴시 즉시 삭제됩니다.</div>
 </div>
 
 
 {% endblock %}
-
 {% block javascript %}
 <script src="{% static 'registration/check_email.js' %}"></script>
+<script src="{% static 'registration/signup.js' %}"></script>
 {% endblock %}
