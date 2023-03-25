@@ -35,11 +35,6 @@ def set_notice_recent_id(notice: HakjisiNotice, max_id: int):
     notice.save()
 
 
-def get_message(user_subscribe: HakjisiSubscribe, valid_item: dict):
-    return f"""게시글 링크: {valid_item.get('notice_link')}
-공지사항 링크: {user_subscribe.notice.notice_link}"""
-
-
 def send_failed_message_to_admin(failed_notices: List[HakjisiNotice]):
     send_data = f"발생 시각: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
     for notice in failed_notices:
@@ -83,13 +78,20 @@ async def send_hakjisi_to_user(notice: HakjisiNotice):
         failed_user_set = set()
         for context in contexts:
             tasks = []
+            notice_title = context.get('title')
+            notice_link = context.get('notice_link')
+
             for s in user_subscribes:
                 send_mail_data = {
-                    'subject': f"{s.title}: {context.get('title')}",
-                    'message': get_message(s, context),
+                    'subject': f"{s.title}: {notice_title}",
+                    'message': f"게시글 링크:\n{notice_link}",
                     'from_email': settings.DEFAULT_FROM_EMAIL,
                     'recipient_list': [s.user.email],
-                    'fail_silently': False
+                    'fail_silently': False,
+                    'html_message':
+                        f"게시글 링크:<br><a href='{notice_link}'>{notice_link}</a><br><br>" + \
+                        f"공지사항 링크:<br><a href='{notice.notice_link}'>{notice.notice_link}</a>"
+
                 }
                 tasks.append(send_mail_async(send_mail_data))
 
