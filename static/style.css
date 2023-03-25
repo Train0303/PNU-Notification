@@ -237,3 +237,12 @@ li {
     width: 100%;
     margin-bottom: 20px;
 }
+
+.nav-item {
+    margin-right: 20px;
+    text-align: -webkit-right;
+}
+
+.nav-link {
+    width: fit-content;
+}

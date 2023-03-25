@@ -45,8 +45,8 @@
 </div>
 {% endif %}
 {% endblock %}
+{% csrf_token %}
 
 {% block javascript %}
-{% csrf_token %}
 <script src="{% static 'registration/update_active.js' %}"></script>
 {% endblock %}
