@@ -1,0 +1,16 @@
+{% extends "mail_base.html" %}
+
+{% block title %}
+<a href="{{ notice_link }}" style="text-decoration: none; font-weight: bold;">{{ notice_title }}</a><br><br><br><br>
+{% endblock %}
+
+
+{% block body %}
+{% if notice_pubdate %}
+작성시간: {{ notice_pubdate }}<br><br>
+{% endif %}
+{% if board_link %}
+<a href="{{ board_link }}" style="text-decoration: none;">게시판으로 이동</a><br><br>
+{% endif %}
+구독취소: <a href="https://pnunoti.site/" style="text-decoration: none;">부산대학교 공지사항 알리미로 이동</a>
+{% endblock %}

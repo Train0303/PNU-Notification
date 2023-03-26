@@ -5,6 +5,8 @@ from asgiref.sync import sync_to_async
 from django.conf import settings
 
 # model import
+from django.template.loader import render_to_string
+
 from notice.models import Notice
 from subscribe.models import Subscribe
 
@@ -125,14 +127,22 @@ async def send_rss_to_user(notice: Notice):
         failed_user_set = set()
         for valid_item in valid_items:
             valid_item['pubDate'] = valid_item['pubDate'].strftime("%Y-%m-%d %H:%M")
+            notice_title = valid_item.get('notice_title')
+            notice_link = valid_item.get('link')
+            notice_pubdate = valid_item.get('pubDate')
             tasks = []
             for s in user_subscribes:
                 send_mail_data = {
-                    'subject': f"{s.title}: {valid_item.get('notice_title')}",
+                    'subject': f"{s.title}: {notice_title}",
                     'message': get_message(s, valid_item),
                     'from_email': settings.DEFAULT_FROM_EMAIL,
                     'recipient_list': [s.user.email],
-                    'fail_silently': False
+                    'fail_silently': False,
+                    'html_message': render_to_string(template_name='notice/mail_template.html',
+                                                     context={'notice_title': notice_title,
+                                                              'notice_link': notice_link,
+                                                              'notice_pubdate': notice_pubdate,
+                                                              'board_link': s.notice_link})
                 }
                 tasks.append(send_mail_async(send_mail_data))
 
