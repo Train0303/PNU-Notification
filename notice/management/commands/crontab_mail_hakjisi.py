@@ -8,6 +8,7 @@ from asgiref.sync import sync_to_async
 from django.conf import settings
 from django.core.mail import send_mail, get_connection
 from django.core.management.base import BaseCommand
+from django.template.loader import render_to_string
 
 from notice.crawl_hakjisi import get_hakjisi_notice, get_univ_notice
 from notice.models import HakjisiNotice
@@ -88,10 +89,11 @@ async def send_hakjisi_to_user(notice: HakjisiNotice):
                     'from_email': settings.DEFAULT_FROM_EMAIL,
                     'recipient_list': [s.user.email],
                     'fail_silently': False,
-                    'html_message':
-                        f"게시글 링크:<br><a href='{notice_link}'>{notice_link}</a><br><br>" + \
-                        f"공지사항 링크:<br><a href='{notice.notice_link}'>{notice.notice_link}</a>"
-
+                    'html_message': render_to_string(template_name='notice/mail_template.html',
+                                                     context={'notice_title': notice_title,
+                                                              'notice_link': notice_link,
+                                                              'notice_pubdate': '',
+                                                              'board_link': notice.notice_link})
                 }
                 tasks.append(send_mail_async(send_mail_data))
 

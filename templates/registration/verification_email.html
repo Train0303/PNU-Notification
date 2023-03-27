@@ -1,15 +1,10 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-</head>
-<body>
+{% extends "mail_base.html" %}
 
-<p>이메일을 활성화하기 위해, 아래 링크를 눌러 이메일 인증을 완료해주세요.</p>
-<br>
-<p><a href="{{ verification_link }}">{{ verification_link }}</a></p>
-<br>
+{% block title %}
+이메일 인증
+{% endblock %}
+{% block body %}
+<p>이메일을 활성화하기 위해, 아래 링크를 눌러 이메일 인증을 완료해주세요.</p><br>
+<p><a href="{{ verification_link }}">{{ verification_link }}</a></p><br>
 <p>본인이 모르는 사실이라면, 이 메일을 무시하시면 됩니다.</p>
-
-</body>
-</html>
+{% endblock %}
