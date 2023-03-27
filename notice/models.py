@@ -29,3 +29,6 @@ class HakjisiNotice(models.Model):
 
     class Meta:
         db_table = "notice_hakjisi"
+
+    def __str__(self):
+        return f"{self.title}"
