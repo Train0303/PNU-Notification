@@ -30,5 +30,5 @@ class HakjisiSubscribe(models.Model):
     class Meta:
         db_table = "subscribe_hakjisi"
         verbose_name = "학지시구독"
-        verbose_name_plural = "구독 그룹"
+        verbose_name_plural = "학지시구독 그룹"
         unique_together = ['user', 'notice', ]
