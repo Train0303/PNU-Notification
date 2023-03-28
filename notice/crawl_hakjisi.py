@@ -2,11 +2,27 @@ import requests
 from bs4 import BeautifulSoup as bs
 
 
+def get_response(url: str) -> requests.models.Response:
+    response = requests.models.Response()
+    for request_counter in range(3):
+        try:
+            response = requests.get(url=url, timeout=10)
+            break
+        except requests.ReadTimeout:
+            pass
+
+    return response
+
+
 def get_hakjisi_notice(current_id: int) -> (int, list):
     # id에 대한 버전 관리가 필요함.
     # 얘네는 학지시 로그인 페이지에서 긁어와야 id를 찾을 수 있음.
     url = 'https://onestop.pusan.ac.kr/login'
-    response = requests.get(url=url)
+
+    response = get_response(url=url)
+    if not response.text:
+        return -1, []
+
     soup = bs(response.text, 'html.parser')
 
     max_id: int = current_id
@@ -39,7 +55,11 @@ def get_univ_notice(current_id: int) -> (int, list):
     # 얘네는 다른 url에서 긁어와야 함.
     base_url = 'https://www.pusan.ac.kr/kor/CMS/Board/PopupBoard.do'
     univ_url = base_url + '?mgr_seq=3&mode=list'
-    response = requests.get(url=univ_url)
+
+    response = get_response(url=univ_url)
+    if not response.text:
+        return -1, []
+
     soup = bs(response.text, 'html.parser')
 
     max_id: int = current_id

@@ -70,6 +70,11 @@ async def send_hakjisi_to_user(notice: HakjisiNotice):
         else:
             raise Exception(f"등록되지 않은 title입니다. {notice.title}")
 
+        if (max_id, contexts) == (-1, []):
+            print(f'{notice.title}을 크롤링하는 과정에서 오류 발생')
+            traceback.print_exc()
+            return notice.id
+
         contexts = remove_duplication(contexts)
 
         await set_notice_recent_id(notice, max_id)
