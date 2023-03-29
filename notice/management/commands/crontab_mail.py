@@ -3,17 +3,19 @@ from django.core.management.base import BaseCommand
 from django.core.mail import send_mail, get_connection
 from asgiref.sync import sync_to_async
 from django.conf import settings
-
-# model import
 from django.template.loader import render_to_string
 
+
+# model import
 from notice.models import Notice
 from subscribe.models import Subscribe
+
+from pnuNoti.core.http_session import create_http_session
 
 # others import
 import asyncio
 from typing import *
-from requests import get, Response
+from requests import Response
 import xmltodict
 from datetime import datetime
 import time
@@ -109,7 +111,8 @@ async def send_rss_to_user(notice: Notice):
     특정 학과의 공지사항을 받아와 마지막 갱신 시간보다 뒤에 등록된 글들을 구독한 회원들에게 메일전송
     """
     try:
-        response: Response = get(url=notice.rss_link, timeout=120)
+        session = create_http_session()
+        response: Response = session.get(url=notice.rss_link, timeout=10)
         res_xml: dict = xmltodict.parse(response.text)
         res_items: List[dict] = res_xml['rss']['channel']['item']
         res_items = remove_duplication(res_items)
