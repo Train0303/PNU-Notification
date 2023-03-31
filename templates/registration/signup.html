@@ -6,8 +6,8 @@
 <div class="container my-5">
     <div id="description">
         <ul>
-            <li><strong>카카오계정</strong>으로 회원가입을 권장합니다.</li>
-            <li><strong>카카오계정</strong>으로 회원가입을 진행하시면,<br>
+            <li><strong>카카오메일</strong>로 회원가입을 권장합니다.</li>
+            <li><strong>카카오메일</strong>로 회원가입을 진행하시면,<br>
                 메일을 카카오톡으로 받아보실 수 있습니다.</li>
             <li>회원가입 시 설정하는 비밀번호는<br>
                 실제 사용중인 이메일의 비밀번호와 같지 않아도 상관 없습니다.</li>
@@ -28,7 +28,7 @@
         {% include "message_errors.html" %}
         <div class="mb-3">
             <label for="email" id="label-email"><span id="email-address">이메일</span><span id="email-duplication-check"></span></label>
-            <input type="text" class="form-control" name="email" id="email" placeholder="예) pnu@naver.com"
+            <input type="text" class="form-control" name="email" id="email" placeholder="예) pnuzzang@kakao.com"
                    value="{{ form.email.value|default_if_none:'' }}">
         </div>
         <div class="mb-3">
