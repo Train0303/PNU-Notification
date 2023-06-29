@@ -8,7 +8,7 @@ from subscribe.models import Subscribe
 # other import
 from requests import Response, get
 import xmltodict
-
+import re
 
 class CreateSubscribeForm(forms.Form):
     title = forms.CharField(label="등록 제목",
@@ -55,6 +55,9 @@ class CreateSubscribeForm(forms.Form):
             if rss_link != notice_link:
                 raise forms.ValidationError('RSS와 같은 학과의 링크를 입력해주세요.')
 
+            notice_link = re.sub(r"\?.*", '', self.cleaned_data['notice_link'])
+            self.cleaned_data['notice_link'] = notice_link
+
         return self.cleaned_data.get('notice_link')
 
     def save(self, save_data):
@@ -85,6 +88,9 @@ class UpdateSubscribeForm(forms.Form):
             notice_link = notice_link.replace('https://', '').split('/')[0]
             if rss_link != notice_link:
                 raise forms.ValidationError('RSS와 같은 학과의 링크를 입력해주세요.')
+
+            notice_link = re.sub(r"\?.*", '', self.cleaned_data['notice_link'])
+            self.cleaned_data['notice_link'] = notice_link
 
         return self.cleaned_data.get('notice_link')
 
