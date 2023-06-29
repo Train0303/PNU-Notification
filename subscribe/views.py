@@ -24,7 +24,7 @@ class CreateSubscribeView(LoginRequiredMixin, FormView):
 
     @transaction.atomic()
     def form_valid(self, form):
-        if Subscribe.objects.filter(user_id = self.request.user.id).count() == 10:
+        if Subscribe.objects.filter(user_id=self.request.user.id).count() == 10:
             messages.warning(self.request, "RSS 구독은 최대 10개까지 가능합니다.")
             return render(self.request, self.template_name, {'form': form})
 
@@ -70,8 +70,8 @@ class UpdateSubscribeView(WriterPermissionRequiredMixin, View):
             return redirect(reverse("subscribe:update-subscribe", args=(pk,)))
 
         subscribe: Subscribe = self.get_object(pk)
-        subscribe.title = context.get('title')
-        subscribe.notice_link = context.get('notice_link')
+        subscribe.title = form.cleaned_data.get('title')
+        subscribe.notice_link = form.cleaned_data.get('notice_link')
         subscribe.save()
 
         return redirect(self.success_url)
